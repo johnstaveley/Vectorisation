@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
   </Folder>
+  <Project Path="EmbeddingService.IntegrationTests/EmbeddingService.IntegrationTests.csproj" />
   <Project Path="EmbeddingService/EmbeddingService.csproj" />
   <Project Path="Platform/Platform.csproj" />
   <Project Path="ServiceDefaults/Platform.ServiceDefaults.csproj" />
