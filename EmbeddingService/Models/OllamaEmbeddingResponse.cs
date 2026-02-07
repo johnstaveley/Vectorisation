@@ -12,10 +12,10 @@ public class OllamaEmbeddingResponse
     public List<List<double>> Embeddings { get; set; } = new List<List<double>>();
 
     [JsonPropertyName("total_duration")]
-    public int TotalDuration { get; set; }
+    public long TotalDuration { get; set; }
 
     [JsonPropertyName("load_duration")]
-    public int LoadDuration { get; set; }
+    public long LoadDuration { get; set; }
 
     [JsonPropertyName("prompt_eval_count")]
     public int PromptEvalCount { get; set; }
