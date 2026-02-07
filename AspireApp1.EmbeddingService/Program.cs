@@ -30,10 +30,7 @@ var elasticService = app.Services.GetRequiredService<ElasticsearchService>();
 await ollamaService.EnsureModelPulledAsync();
 await elasticService.InitializeIndexAsync();
 
-app.MapPost("/embeddings", async (
-    EmbeddingRequest request,
-    OllamaEmbeddingService ollama,
-    ElasticsearchService elastic,
+app.MapPost("/embeddings", async (EmbeddingRequest request, OllamaEmbeddingService ollama, ElasticsearchService elastic,
     CancellationToken ct) =>
 {
     if (string.IsNullOrWhiteSpace(request.Text))
@@ -42,7 +39,7 @@ app.MapPost("/embeddings", async (
     }
 
     var embedding = await ollama.GenerateEmbeddingAsync(request.Text, ct);
-    
+
     var document = new EmbeddingDocument
     {
         Text = request.Text,
@@ -87,7 +84,7 @@ app.MapGet("/embeddings/{id}", async (
     CancellationToken ct) =>
 {
     var document = await elastic.GetDocumentAsync(id, ct);
-    
+
     if (document == null)
     {
         return Results.NotFound();
@@ -104,7 +101,7 @@ app.MapDelete("/embeddings/{id}", async (
     CancellationToken ct) =>
 {
     var deleted = await elastic.DeleteDocumentAsync(id, ct);
-    
+
     if (!deleted)
     {
         return Results.NotFound();

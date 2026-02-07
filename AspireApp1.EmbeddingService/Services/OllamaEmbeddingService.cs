@@ -36,11 +36,11 @@ public class OllamaEmbeddingService
             response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
             var result = JsonSerializer.Deserialize<OllamaEmbeddingResponse>(responseJson);
-            if (result?.Embedding == null || result.Embedding.Length == 0)
+            if (result?.Embeddings == null || result.Embeddings.Count == 0)
             {
                 throw new InvalidOperationException("Failed to generate embeddings");
             }
-            return result.Embedding;
+            return result.Embeddings.First().ToArray();
         }
         catch (Exception ex)
         {

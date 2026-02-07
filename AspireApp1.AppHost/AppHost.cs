@@ -5,7 +5,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var ollama = builder.AddOllama("ollama")
     .WithDataVolume()
-    .WithOpenWebUI();
+    .WithOpenWebUI()
+    .AddModel("nomic-embed-text");
 
 var elasticsearch = builder.AddElasticsearch("elasticsearch")
     .WithDataVolume();
