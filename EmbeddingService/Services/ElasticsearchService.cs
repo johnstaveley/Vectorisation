@@ -9,8 +9,7 @@ public class ElasticsearchService
     private readonly ElasticsearchClient _client;
     private readonly ILogger<ElasticsearchService> _logger;
     private readonly string _indexName;
-    public ElasticsearchService(ElasticsearchClient client, IConfiguration configuration,
-        ILogger<ElasticsearchService> logger)
+    public ElasticsearchService(ElasticsearchClient client, IConfiguration configuration, ILogger<ElasticsearchService> logger)
     {
         _client = client;
         _logger = logger;

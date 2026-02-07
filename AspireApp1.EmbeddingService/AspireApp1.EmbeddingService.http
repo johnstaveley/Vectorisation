@@ -1,6 +1,0 @@
-@AspireApp1.EmbeddingService_HostAddress = http://localhost:5257
-
-GET {{AspireApp1.EmbeddingService_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -1,18 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
     <PackageReference Include="Aspire.Elastic.Clients.Elasticsearch" Version="10.0.1" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\AspireApp1.ServiceDefaults\Platform.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\ServiceDefaults\Platform.ServiceDefaults.csproj" />
   </ItemGroup>
-
 </Project>
