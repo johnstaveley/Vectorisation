@@ -12,6 +12,8 @@ var elasticsearch = builder.AddElasticsearch("elasticsearch")
 
 var embeddingService = builder.AddProject("embeddingservice", "../AspireApp1.EmbeddingService/EmbeddingService.csproj")
     .WithReference(ollama)
-    .WithReference(elasticsearch);
+    .WithReference(elasticsearch)
+    .WaitFor(ollama)
+    .WaitFor(elasticsearch);
 
 builder.Build().Run();
