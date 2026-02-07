@@ -9,12 +9,14 @@
 
 2. Start the Aspire AppHost (this will start Ollama, Elasticsearch, and the EmbeddingService)
 
+3. Get the embeddings service url e.g. https://localhost:1234/
+
 ## API Examples
 
 ### 1. Create an Embedding
 
 ```bash
-curl -X POST http://localhost:5000/embeddings \
+curl -X POST http://<Embeddings Service Url>/embeddings \
   -H "Content-Type: application/json" \
   -d '{
     "text": "Artificial intelligence is transforming the world",
@@ -37,7 +39,7 @@ Response:
 ### 2. Search for Similar Text
 
 ```bash
-curl -X POST http://localhost:5000/search \
+curl -X POST http://<Embeddings Service Url>/search \
   -H "Content-Type: application/json" \
   -d '{
     "query": "machine learning and AI",
@@ -63,13 +65,13 @@ Response:
 ### 3. Get Embedding by ID
 
 ```bash
-curl http://localhost:5000/embeddings/550e8400-e29b-41d4-a716-446655440000
+curl http://<Embeddings Service Url>/embeddings/550e8400-e29b-41d4-a716-446655440000
 ```
 
 ### 4. Delete an Embedding
 
 ```bash
-curl -X DELETE http://localhost:5000/embeddings/550e8400-e29b-41d4-a716-446655440000
+curl -X DELETE http://<Embeddings Service Url>/embeddings/550e8400-e29b-41d4-a716-446655440000
 ```
 
 ## Using with PowerShell
@@ -84,7 +86,7 @@ $body = @{
     }
 } | ConvertTo-Json
 
-Invoke-RestMethod -Method Post -Uri "http://localhost:5000/embeddings" `
+Invoke-RestMethod -Method Post -Uri "http://<Embeddings Service Url>/embeddings" `
     -ContentType "application/json" -Body $body
 
 # Search
@@ -93,7 +95,7 @@ $searchBody = @{
     topK = 5
 } | ConvertTo-Json
 
-Invoke-RestMethod -Method Post -Uri "http://localhost:5000/search" `
+Invoke-RestMethod -Method Post -Uri "http://<Embeddings Service Url>/search" `
     -ContentType "application/json" -Body $searchBody
 ```
 
@@ -102,7 +104,7 @@ Invoke-RestMethod -Method Post -Uri "http://localhost:5000/search" `
 ```csharp
 using System.Net.Http.Json;
 
-var client = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
+var client = new HttpClient { BaseAddress = new Uri("http://<Embeddings Service Url>") };
 
 // Create embedding
 var request = new { text = "Artificial intelligence is transforming the world" };
