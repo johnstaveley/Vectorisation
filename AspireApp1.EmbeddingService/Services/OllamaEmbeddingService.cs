@@ -13,7 +13,7 @@ public class OllamaEmbeddingService
     public OllamaEmbeddingService(IConfiguration configuration, ILogger<OllamaEmbeddingService> logger,
         IHttpClientFactory httpClientFactory)
     {
-        _baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:11434";
+        _baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? throw new Exception("Ollama endpoint not configured");
         _baseUrl = _baseUrl.Replace("Endpoint=", "");
         _httpClient = httpClientFactory.CreateClient();
         _httpClient.BaseAddress = new Uri(_baseUrl);
@@ -28,11 +28,11 @@ public class OllamaEmbeddingService
             var request = new
             {
                 model = _modelName,
-                prompt = text
+                input = text
             };
             var json = JsonSerializer.Serialize(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("/api/embeddings", content, cancellationToken);
+            var response = await _httpClient.PostAsync("/api/embed", content, cancellationToken);
             response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
             var result = JsonSerializer.Deserialize<OllamaEmbeddingResponse>(responseJson);
