@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="AspireApp1.AppHost/Platform.csproj" />
+  <Project Path="AspireApp1.EmbeddingService/EmbeddingService.csproj" />
+  <Project Path="AspireApp1.ServiceDefaults/Platform.ServiceDefaults.csproj" />
+</Solution>
