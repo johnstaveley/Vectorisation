@@ -32,7 +32,6 @@ public class EmbeddingServiceEdgeCaseTests : IClassFixture<WebApplicationFactory
         Assert.NotNull(embeddingResponse);
         Assert.NotEmpty(embeddingResponse.Embedding);
     }
-
     [Fact]
     public async Task CreateEmbedding_WithSpecialCharacters_ReturnsOk()
     {

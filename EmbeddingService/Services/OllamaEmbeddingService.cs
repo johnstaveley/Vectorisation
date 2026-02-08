@@ -13,8 +13,8 @@ public class OllamaEmbeddingService
     public OllamaEmbeddingService(IConfiguration configuration, ILogger<OllamaEmbeddingService> logger,
         IHttpClientFactory httpClientFactory)
     {
-        //_baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:11434";
-        _baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? throw new Exception("Ollama not initialised");
+        _baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:50494";
+        //_baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? throw new Exception("Ollama not initialised");
         _baseUrl = _baseUrl.Replace("Endpoint=", "");
         _httpClient = httpClientFactory.CreateClient();
         _httpClient.BaseAddress = new Uri(_baseUrl);

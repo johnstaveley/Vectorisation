@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
@@ -10,5 +10,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ServiceDefaults\Platform.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\EmbeddingService.Models\EmbeddingService.Models.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>

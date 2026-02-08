@@ -17,5 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EmbeddingService\EmbeddingService.csproj" />
+    <ProjectReference Include="..\EmbeddingService.Models\EmbeddingService.Models.csproj" />
   </ItemGroup>
 </Project>
