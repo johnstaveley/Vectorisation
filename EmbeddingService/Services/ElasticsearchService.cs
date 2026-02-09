@@ -71,12 +71,12 @@ public class ElasticsearchService
             _logger.LogError("Search failed: {Error}", searchResponse.ElasticsearchServerError);
             throw new InvalidOperationException($"Search failed: {searchResponse.ElasticsearchServerError}");
         }
-        return searchResponse.Documents.Select(doc => new SearchResult
+        return searchResponse.Hits.Select(hit => new SearchResult
         {
-            Id = doc.Id,
-            Text = doc.Text,
-            Score = 0,
-            Metadata = doc.Metadata
+            Id = hit.Source!.Id,
+            Text = hit.Source.Text,
+            Score = hit.Score ?? 0,
+            Metadata = hit.Source.Metadata
         }).ToList();
     }
     public async Task<EmbeddingDocument?> GetDocumentAsync(string id, CancellationToken cancellationToken = default)
