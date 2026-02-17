@@ -7,7 +7,7 @@
    ollama pull nomic-embed-text
    ```
 
-2. Start the Aspire AppHost (this will start Ollama, Elasticsearch, and the EmbeddingService)
+2. Start the Aspire AppHost (this will start Ollama, Elasticsearch, and the EmbeddingService). It may take a while to pull the images on first run. You may need to restart this process
 
 3. Get the embeddings service url e.g. https://localhost:1234/
 
@@ -15,16 +15,8 @@
 
 ### 1. Create an Embedding
 
-```bash
-curl -X POST http://<Embeddings Service Url>/embeddings \
-  -H "Content-Type: application/json" \
-  -d '{
-    "text": "Artificial intelligence is transforming the world",
-    "metadata": {
-      "source": "article",
-      "category": "technology"
-    }
-  }'
+``` bash or command prompt
+curl -X POST http://<Embeddings Service Url>/embeddings -H "Content-Type: application/json" -d '{"text": "Artificial intelligence is transforming the world", "metadata": {"source": "article","category": "technology"}}'
 ```
 
 Response:

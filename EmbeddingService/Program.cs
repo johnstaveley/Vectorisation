@@ -55,8 +55,7 @@ app.MapPost("/embeddings", async (EmbeddingRequest request, OllamaEmbeddingServi
             Text = request.Text
         });
     })
-    .WithName("CreateEmbedding")
-    .WithOpenApi();
+    .WithName("CreateEmbedding");
 
 app.MapPost("/search", async (SearchRequest request, OllamaEmbeddingService ollama, ElasticsearchService elastic, CancellationToken ct) =>
     {
@@ -70,8 +69,7 @@ app.MapPost("/search", async (SearchRequest request, OllamaEmbeddingService olla
 
         return Results.Ok(results);
     })
-    .WithName("SearchSimilar")
-    .WithOpenApi();
+    .WithName("SearchSimilar");
 
 app.MapGet("/embeddings/{id}", async (string id, ElasticsearchService elastic, CancellationToken ct) =>
     {
@@ -84,8 +82,7 @@ app.MapGet("/embeddings/{id}", async (string id, ElasticsearchService elastic, C
 
         return Results.Ok(document);
     })
-    .WithName("GetEmbedding")
-    .WithOpenApi();
+    .WithName("GetEmbedding");
 
 app.MapDelete("/embeddings/{id}", async (string id, ElasticsearchService elastic, CancellationToken ct) =>
     {
@@ -98,7 +95,6 @@ app.MapDelete("/embeddings/{id}", async (string id, ElasticsearchService elastic
 
         return Results.NoContent();
     })
-    .WithName("DeleteEmbedding")
-    .WithOpenApi();
+    .WithName("DeleteEmbedding");
 
 app.Run();

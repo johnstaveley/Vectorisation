@@ -1,18 +1,16 @@
+using EmbeddingService.Models;
 using System.Net;
 using System.Net.Http.Json;
-using EmbeddingService.Models;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Xunit;
 
 namespace EmbeddingService.IntegrationTests;
 
-public class EmbeddingServiceEdgeCaseTests : IClassFixture<WebApplicationFactory<Program>>
+public class EmbeddingServiceEdgeCaseTests
 {
     private readonly HttpClient _client;
 
-    public EmbeddingServiceEdgeCaseTests(WebApplicationFactory<Program> factory)
+    public EmbeddingServiceEdgeCaseTests()
     {
-        _client = factory.CreateClient();
+        _client = new DefaultHttpClientFactory().CreateClient();
     }
 
     [Fact]
