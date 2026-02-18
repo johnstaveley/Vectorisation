@@ -71,7 +71,6 @@ public class EmbeddingServiceBulkOperationsTests
             getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
-
     [Fact]
     public async Task DeleteAllEmbeddings_WhenNoDocumentsExist_ReturnsZeroCount()
     {
