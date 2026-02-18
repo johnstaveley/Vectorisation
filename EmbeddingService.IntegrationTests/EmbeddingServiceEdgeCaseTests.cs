@@ -23,7 +23,7 @@ public class EmbeddingServiceEdgeCaseTests
             Text = longText
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -61,7 +61,7 @@ public class EmbeddingServiceEdgeCaseTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
         embeddingResponse!.Text.Should().Be(request.Text);
     }
@@ -89,7 +89,7 @@ public class EmbeddingServiceEdgeCaseTests
             Metadata = null
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
