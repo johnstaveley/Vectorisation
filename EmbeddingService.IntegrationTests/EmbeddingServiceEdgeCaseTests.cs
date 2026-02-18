@@ -27,7 +27,7 @@ public class EmbeddingServiceEdgeCaseTests
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
         embeddingResponse!.Embedding.Should().NotBeEmpty();
     }
@@ -40,11 +40,11 @@ public class EmbeddingServiceEdgeCaseTests
             Text = "Special characters: @#$%^&*()_+-=[]{}|;:',.<>?/~`! \"Hello\" 'World'"
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
         embeddingResponse!.Text.Should().Be(request.Text);
     }
@@ -57,7 +57,7 @@ public class EmbeddingServiceEdgeCaseTests
             Text = "Unicode test: ???? ?????? ????? ????? ?????"
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -75,7 +75,7 @@ public class EmbeddingServiceEdgeCaseTests
             Metadata = new Dictionary<string, string>()
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -103,11 +103,11 @@ public class EmbeddingServiceEdgeCaseTests
             TopK = 0
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
+        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
         results.Should().NotBeNull();
     }
 
@@ -118,9 +118,9 @@ public class EmbeddingServiceEdgeCaseTests
         {
             Text = "Single document for large TopK test"
         };
-        await _client.PostAsJsonAsync("/embeddings", createRequest);
+        await _client.PostAsJsonAsync("/embeddings", createRequest, cancellationToken: TestContext.Current.CancellationToken);
 
-        await Task.Delay(1000);
+        await Task.Delay(1000, cancellationToken: TestContext.Current.CancellationToken);
 
         var searchRequest = new SearchRequest
         {
@@ -128,21 +128,21 @@ public class EmbeddingServiceEdgeCaseTests
             TopK = 1000
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
+        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
         results.Should().NotBeNull();
     }
 
     [Fact]
     public async Task GetEmbedding_WithEmptyId_ReturnsBadRequestOrNotFound()
     {
-        var response = await _client.GetAsync("/embeddings/");
+        var response = await _client.GetAsync("/embeddings/", cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().BeOneOf(
-            HttpStatusCode.NotFound, 
+            HttpStatusCode.NotFound,
             HttpStatusCode.BadRequest,
             HttpStatusCode.MethodNotAllowed);
     }
@@ -155,14 +155,14 @@ public class EmbeddingServiceEdgeCaseTests
             Text = "Document to be deleted twice"
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest);
-        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest, cancellationToken: TestContext.Current.CancellationToken);
+        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
 
-        var firstDeleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse!.Id}");
+        var firstDeleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse!.Id}", cancellationToken: TestContext.Current.CancellationToken);
         firstDeleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var secondDeleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse.Id}");
+        var secondDeleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse.Id}", cancellationToken: TestContext.Current.CancellationToken);
         secondDeleteResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -174,7 +174,7 @@ public class EmbeddingServiceEdgeCaseTests
             Text = "   "
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -188,7 +188,7 @@ public class EmbeddingServiceEdgeCaseTests
             TopK = 5
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -202,11 +202,11 @@ public class EmbeddingServiceEdgeCaseTests
             TopK = 5
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
+        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
         results.Should().NotBeNull();
     }
 }

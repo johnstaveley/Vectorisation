@@ -39,15 +39,15 @@ public class EmbeddingServiceWorkflowTests
                 }
             };
 
-            var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest, cancellationToken: TestContext.Current.CancellationToken);
             createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
+            var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
             embeddingResponse.Should().NotBeNull();
             createdIds.Add(embeddingResponse!.Id);
         }
 
-        await Task.Delay(1500);
+        await Task.Delay(1500, cancellationToken: TestContext.Current.CancellationToken);
 
         var searchRequest = new SearchRequest
         {
@@ -55,23 +55,23 @@ public class EmbeddingServiceWorkflowTests
             TopK = 3
         };
 
-        var searchResponse = await _client.PostAsJsonAsync("/search", searchRequest);
+        var searchResponse = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
         searchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var searchResults = await searchResponse.Content.ReadFromJsonAsync<List<SearchResult>>();
+        var searchResults = await searchResponse.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
         searchResults.Should().NotBeNull();
         searchResults!.Should().NotBeEmpty();
         searchResults.Should().HaveCountLessThanOrEqualTo(3);
 
         foreach (var id in createdIds)
         {
-            var deleteResponse = await _client.DeleteAsync($"/embeddings/{id}");
+            var deleteResponse = await _client.DeleteAsync($"/embeddings/{id}", cancellationToken: TestContext.Current.CancellationToken);
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         foreach (var id in createdIds)
         {
-            var getResponse = await _client.GetAsync($"/embeddings/{id}");
+            var getResponse = await _client.GetAsync($"/embeddings/{id}", cancellationToken: TestContext.Current.CancellationToken);
             getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
@@ -92,11 +92,11 @@ public class EmbeddingServiceWorkflowTests
             Text = "Data science involves analyzing and interpreting complex data"
         };
 
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest1);
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest2);
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest3);
+        await _client.PostAsJsonAsync("/embeddings", embeddingRequest1, cancellationToken: TestContext.Current.CancellationToken);
+        await _client.PostAsJsonAsync("/embeddings", embeddingRequest2, cancellationToken: TestContext.Current.CancellationToken);
+        await _client.PostAsJsonAsync("/embeddings", embeddingRequest3, cancellationToken: TestContext.Current.CancellationToken);
 
-        await Task.Delay(1500);
+        await Task.Delay(1500, cancellationToken: TestContext.Current.CancellationToken);
 
         var searchRequest = new SearchRequest
         {
@@ -104,8 +104,8 @@ public class EmbeddingServiceWorkflowTests
             TopK = 3
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
-        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
+        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
 
         results.Should().NotBeNull();
         results!.Should().NotBeEmpty();
@@ -135,7 +135,7 @@ public class EmbeddingServiceWorkflowTests
                 }
             };
 
-            var response = await _client.PostAsJsonAsync("/embeddings", request);
+            var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
@@ -159,11 +159,11 @@ public class EmbeddingServiceWorkflowTests
             Metadata = new Dictionary<string, string> { { "version", "1" } }
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/embeddings", originalRequest);
-        var originalEmbedding = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var createResponse = await _client.PostAsJsonAsync("/embeddings", originalRequest, cancellationToken: TestContext.Current.CancellationToken);
+        var originalEmbedding = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         originalEmbedding.Should().NotBeNull();
 
-        var deleteResponse = await _client.DeleteAsync($"/embeddings/{originalEmbedding!.Id}");
+        var deleteResponse = await _client.DeleteAsync($"/embeddings/{originalEmbedding!.Id}", cancellationToken: TestContext.Current.CancellationToken);
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var updatedRequest = new EmbeddingRequest
@@ -172,12 +172,12 @@ public class EmbeddingServiceWorkflowTests
             Metadata = new Dictionary<string, string> { { "version", "2" } }
         };
 
-        var updateCreateResponse = await _client.PostAsJsonAsync("/embeddings", updatedRequest);
-        var updatedEmbedding = await updateCreateResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var updateCreateResponse = await _client.PostAsJsonAsync("/embeddings", updatedRequest, cancellationToken: TestContext.Current.CancellationToken);
+        var updatedEmbedding = await updateCreateResponse.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         updatedEmbedding.Should().NotBeNull();
 
-        var getResponse = await _client.GetAsync($"/embeddings/{updatedEmbedding!.Id}");
-        var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>();
+        var getResponse = await _client.GetAsync($"/embeddings/{updatedEmbedding!.Id}", cancellationToken: TestContext.Current.CancellationToken);
+        var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>(cancellationToken: TestContext.Current.CancellationToken);
 
         document.Should().NotBeNull();
         document!.Text.Should().Be("Updated document text");

@@ -27,11 +27,11 @@ public class EmbeddingServiceTests
             }
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
         embeddingResponse!.Id.Should().NotBeEmpty();
         embeddingResponse.Embedding.Should().NotBeEmpty();
@@ -46,7 +46,7 @@ public class EmbeddingServiceTests
             Text = ""
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -59,7 +59,7 @@ public class EmbeddingServiceTests
             Text = null!
         };
 
-        var response = await _client.PostAsJsonAsync("/embeddings", request);
+        var response = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -72,15 +72,15 @@ public class EmbeddingServiceTests
             Text = "Test document for retrieval"
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest);
-        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest, cancellationToken: TestContext.Current.CancellationToken);
+        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
 
-        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse!.Id}");
+        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse!.Id}", cancellationToken: TestContext.Current.CancellationToken);
 
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>();
+        var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>(cancellationToken: TestContext.Current.CancellationToken);
         document.Should().NotBeNull();
         document!.Text.Should().Be(createRequest.Text);
         document.Embedding.Should().NotBeEmpty();
@@ -89,7 +89,7 @@ public class EmbeddingServiceTests
     [Fact]
     public async Task GetEmbedding_WithInvalidId_ReturnsNotFound()
     {
-        var response = await _client.GetAsync("/embeddings/nonexistent-id");
+        var response = await _client.GetAsync("/embeddings/nonexistent-id", cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -110,11 +110,11 @@ public class EmbeddingServiceTests
             Text = "The weather is nice today"
         };
 
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest1);
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest2);
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest3);
+        await _client.PostAsJsonAsync("/embeddings", embeddingRequest1, cancellationToken: TestContext.Current.CancellationToken);
+        await _client.PostAsJsonAsync("/embeddings", embeddingRequest2, cancellationToken: TestContext.Current.CancellationToken);
+        await _client.PostAsJsonAsync("/embeddings", embeddingRequest3, cancellationToken: TestContext.Current.CancellationToken);
 
-        await Task.Delay(1000);
+        await Task.Delay(1000, cancellationToken: TestContext.Current.CancellationToken);
 
         var searchRequest = new SearchRequest
         {
@@ -122,11 +122,11 @@ public class EmbeddingServiceTests
             TopK = 2
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
+        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
         results.Should().NotBeNull();
         results!.Should().HaveCountLessThanOrEqualTo(2);
 
@@ -146,7 +146,7 @@ public class EmbeddingServiceTests
             TopK = 5
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -160,7 +160,7 @@ public class EmbeddingServiceTests
             TopK = 5
         };
 
-        var response = await _client.PostAsJsonAsync("/search", searchRequest);
+        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -173,22 +173,22 @@ public class EmbeddingServiceTests
             Text = "Document to be deleted"
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest);
-        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest, cancellationToken: TestContext.Current.CancellationToken);
+        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
 
-        var deleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse!.Id}");
+        var deleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse!.Id}", cancellationToken: TestContext.Current.CancellationToken);
 
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse.Id}");
+        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse.Id}", cancellationToken: TestContext.Current.CancellationToken);
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task DeleteEmbedding_WithInvalidId_ReturnsNotFound()
     {
-        var response = await _client.DeleteAsync("/embeddings/nonexistent-id");
+        var response = await _client.DeleteAsync("/embeddings/nonexistent-id", cancellationToken: TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -207,12 +207,12 @@ public class EmbeddingServiceTests
             }
         };
 
-        var createResponse = await _client.PostAsJsonAsync("/embeddings", request);
-        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
+        var createResponse = await _client.PostAsJsonAsync("/embeddings", request, cancellationToken: TestContext.Current.CancellationToken);
+        var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>(cancellationToken: TestContext.Current.CancellationToken);
         embeddingResponse.Should().NotBeNull();
 
-        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse!.Id}");
-        var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>();
+        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse!.Id}", cancellationToken: TestContext.Current.CancellationToken);
+        var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>(cancellationToken: TestContext.Current.CancellationToken);
 
         document.Should().NotBeNull();
         document!.Metadata.Should().NotBeNull();

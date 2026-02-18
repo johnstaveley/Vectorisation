@@ -16,7 +16,6 @@ public class TestConfigurationTests
         config.WebServerUrl.Should().NotBeEmpty();
         config.WebServerUrl.Should().StartWith("http");
     }
-
     [Fact]
     public void TestConfiguration_IsSingleton_ReturnsSameInstance()
     {
