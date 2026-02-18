@@ -97,4 +97,12 @@ app.MapDelete("/embeddings/{id}", async (string id, ElasticsearchService elastic
     })
     .WithName("DeleteEmbedding");
 
+app.MapDelete("/embeddings", async (ElasticsearchService elastic, CancellationToken ct) =>
+    {
+        var deletedCount = await elastic.DeleteAllDocumentsAsync(ct);
+
+        return Results.Ok(new { DeletedCount = deletedCount });
+    })
+    .WithName("DeleteAllEmbeddings");
+
 app.Run();

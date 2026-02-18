@@ -98,5 +98,22 @@ public class ElasticsearchService
         var response = await _client.DeleteAsync<EmbeddingDocument>(id, idx => idx.Index(_indexName), cancellationToken);
         return response.IsValidResponse;
     }
+
+    public async Task<long> DeleteAllDocumentsAsync(CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Deleting all documents from index {IndexName}", _indexName);
+
+        var response = await _client.DeleteByQueryAsync<EmbeddingDocument>(_indexName, d => d
+            .Query(q => q.MatchAll()), cancellationToken);
+
+        if (!response.IsValidResponse)
+        {
+            _logger.LogError("Failed to delete all documents: {Error}", response.ElasticsearchServerError);
+            throw new InvalidOperationException($"Failed to delete all documents: {response.ElasticsearchServerError}");
+        }
+
+        _logger.LogInformation("Deleted {Count} documents from index {IndexName}", response.Deleted, _indexName);
+        return response.Deleted ?? 0;
+    }
 }
 
