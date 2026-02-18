@@ -1,4 +1,5 @@
 using EmbeddingService.Models;
+using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -10,7 +11,7 @@ public class EmbeddingServiceTests
 
     public EmbeddingServiceTests()
     {
-        _client = _client = new DefaultHttpClientFactory().CreateClient();
+        _client = new DefaultHttpClientFactory().CreateClient();
     }
 
     [Fact]
@@ -28,13 +29,13 @@ public class EmbeddingServiceTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
-        Assert.NotEmpty(embeddingResponse.Id);
-        Assert.NotEmpty(embeddingResponse.Embedding);
-        Assert.Equal(request.Text, embeddingResponse.Text);
+        embeddingResponse.Should().NotBeNull();
+        embeddingResponse!.Id.Should().NotBeEmpty();
+        embeddingResponse.Embedding.Should().NotBeEmpty();
+        embeddingResponse.Text.Should().Be(request.Text);
     }
 
     [Fact]
@@ -47,7 +48,7 @@ public class EmbeddingServiceTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -60,7 +61,7 @@ public class EmbeddingServiceTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -73,16 +74,16 @@ public class EmbeddingServiceTests
 
         var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest);
         var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
+        embeddingResponse.Should().NotBeNull();
 
-        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse.Id}");
+        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse!.Id}");
 
-        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>();
-        Assert.NotNull(document);
-        Assert.Equal(createRequest.Text, document.Text);
-        Assert.NotEmpty(document.Embedding);
+        document.Should().NotBeNull();
+        document!.Text.Should().Be(createRequest.Text);
+        document.Embedding.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -90,7 +91,7 @@ public class EmbeddingServiceTests
     {
         var response = await _client.GetAsync("/embeddings/nonexistent-id");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -123,16 +124,16 @@ public class EmbeddingServiceTests
 
         var response = await _client.PostAsJsonAsync("/search", searchRequest);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
-        Assert.NotNull(results);
-        Assert.True(results.Count <= 2);
-        
+        results.Should().NotBeNull();
+        results!.Should().HaveCountLessThanOrEqualTo(2);
+
         if (results.Count > 0)
         {
-            Assert.NotEmpty(results[0].Id);
-            Assert.NotEmpty(results[0].Text);
+            results[0].Id.Should().NotBeEmpty();
+            results[0].Text.Should().NotBeEmpty();
         }
     }
 
@@ -147,7 +148,7 @@ public class EmbeddingServiceTests
 
         var response = await _client.PostAsJsonAsync("/search", searchRequest);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -161,7 +162,7 @@ public class EmbeddingServiceTests
 
         var response = await _client.PostAsJsonAsync("/search", searchRequest);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -174,14 +175,14 @@ public class EmbeddingServiceTests
 
         var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest);
         var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
+        embeddingResponse.Should().NotBeNull();
 
-        var deleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse.Id}");
+        var deleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse!.Id}");
 
-        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse.Id}");
-        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -189,7 +190,7 @@ public class EmbeddingServiceTests
     {
         var response = await _client.DeleteAsync("/embeddings/nonexistent-id");
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -208,16 +209,16 @@ public class EmbeddingServiceTests
 
         var createResponse = await _client.PostAsJsonAsync("/embeddings", request);
         var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
+        embeddingResponse.Should().NotBeNull();
 
-        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse.Id}");
+        var getResponse = await _client.GetAsync($"/embeddings/{embeddingResponse!.Id}");
         var document = await getResponse.Content.ReadFromJsonAsync<EmbeddingDocument>();
-        
-        Assert.NotNull(document);
-        Assert.NotNull(document.Metadata);
-        Assert.Equal(3, document.Metadata.Count);
-        Assert.Equal("John Doe", document.Metadata["author"]);
-        Assert.Equal("technology", document.Metadata["category"]);
-        Assert.Equal("2024-01-01", document.Metadata["date"]);
+
+        document.Should().NotBeNull();
+        document!.Metadata.Should().NotBeNull();
+        document.Metadata.Should().HaveCount(3);
+        document.Metadata!["author"].Should().Be("John Doe");
+        document.Metadata["category"].Should().Be("technology");
+        document.Metadata["date"].Should().Be("2024-01-01");
     }
 }

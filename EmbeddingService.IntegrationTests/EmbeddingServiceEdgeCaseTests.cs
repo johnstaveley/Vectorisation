@@ -1,4 +1,5 @@
 using EmbeddingService.Models;
+using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -24,12 +25,13 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
-        Assert.NotEmpty(embeddingResponse.Embedding);
+        embeddingResponse.Should().NotBeNull();
+        embeddingResponse!.Embedding.Should().NotBeEmpty();
     }
+
     [Fact]
     public async Task CreateEmbedding_WithSpecialCharacters_ReturnsOk()
     {
@@ -40,11 +42,11 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
-        Assert.Equal(request.Text, embeddingResponse.Text);
+        embeddingResponse.Should().NotBeNull();
+        embeddingResponse!.Text.Should().Be(request.Text);
     }
 
     [Fact]
@@ -57,11 +59,11 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var embeddingResponse = await response.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
-        Assert.Equal(request.Text, embeddingResponse.Text);
+        embeddingResponse.Should().NotBeNull();
+        embeddingResponse!.Text.Should().Be(request.Text);
     }
 
     [Fact]
@@ -75,7 +77,7 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -89,7 +91,7 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [Fact]
@@ -103,10 +105,10 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/search", searchRequest);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
-        Assert.NotNull(results);
+        results.Should().NotBeNull();
     }
 
     [Fact]
@@ -128,10 +130,10 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/search", searchRequest);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
-        Assert.NotNull(results);
+        results.Should().NotBeNull();
     }
 
     [Fact]
@@ -139,10 +141,10 @@ public class EmbeddingServiceEdgeCaseTests
     {
         var response = await _client.GetAsync("/embeddings/");
 
-        Assert.True(
-            response.StatusCode == HttpStatusCode.NotFound || 
-            response.StatusCode == HttpStatusCode.BadRequest ||
-            response.StatusCode == HttpStatusCode.MethodNotAllowed);
+        response.StatusCode.Should().BeOneOf(
+            HttpStatusCode.NotFound, 
+            HttpStatusCode.BadRequest,
+            HttpStatusCode.MethodNotAllowed);
     }
 
     [Fact]
@@ -155,13 +157,13 @@ public class EmbeddingServiceEdgeCaseTests
 
         var createResponse = await _client.PostAsJsonAsync("/embeddings", createRequest);
         var embeddingResponse = await createResponse.Content.ReadFromJsonAsync<EmbeddingResponse>();
-        Assert.NotNull(embeddingResponse);
+        embeddingResponse.Should().NotBeNull();
 
-        var firstDeleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse.Id}");
-        Assert.Equal(HttpStatusCode.NoContent, firstDeleteResponse.StatusCode);
+        var firstDeleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse!.Id}");
+        firstDeleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var secondDeleteResponse = await _client.DeleteAsync($"/embeddings/{embeddingResponse.Id}");
-        Assert.Equal(HttpStatusCode.NotFound, secondDeleteResponse.StatusCode);
+        secondDeleteResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -174,7 +176,7 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/embeddings", request);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -188,7 +190,7 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/search", searchRequest);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -202,9 +204,9 @@ public class EmbeddingServiceEdgeCaseTests
 
         var response = await _client.PostAsJsonAsync("/search", searchRequest);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
         var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>();
-        Assert.NotNull(results);
+        results.Should().NotBeNull();
     }
 }

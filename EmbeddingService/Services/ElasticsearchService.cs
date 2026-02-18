@@ -57,6 +57,11 @@ public class ElasticsearchService
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Searching for top {TopK} similar documents", topK);
+        if (topK <= 0)
+        {
+            return new List<SearchResult>();
+        }
+        var numCandidates = Math.Max(topK * 2, 100);
         var floatEmbedding = queryEmbedding.Select(d => (float)d).ToArray();
         var searchResponse = await _client.SearchAsync<EmbeddingDocument>(s => s
             .Indices(_indexName)
@@ -64,7 +69,7 @@ public class ElasticsearchService
                 .Field(f => f.Embedding)
                 .QueryVector(floatEmbedding)
                 .K(topK)
-                .NumCandidates(100)
+                .NumCandidates(numCandidates)
             ), cancellationToken);
         if (!searchResponse.IsValidResponse)
         {

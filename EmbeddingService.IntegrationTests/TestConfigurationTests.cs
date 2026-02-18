@@ -1,3 +1,5 @@
+using FluentAssertions;
+
 namespace EmbeddingService.IntegrationTests;
 
 public class TestConfigurationTests
@@ -9,10 +11,10 @@ public class TestConfigurationTests
         var config = TestConfiguration.Instance;
 
         // Assert
-        Assert.NotNull(config);
-        Assert.NotNull(config.WebServerUrl);
-        Assert.NotEmpty(config.WebServerUrl);
-        Assert.StartsWith("http", config.WebServerUrl);
+        config.Should().NotBeNull();
+        config.WebServerUrl.Should().NotBeNull();
+        config.WebServerUrl.Should().NotBeEmpty();
+        config.WebServerUrl.Should().StartWith("http");
     }
 
     [Fact]
@@ -23,6 +25,6 @@ public class TestConfigurationTests
         var instance2 = TestConfiguration.Instance;
 
         // Assert
-        Assert.Same(instance1, instance2);
+        instance1.Should().BeSameAs(instance2);
     }
 }
