@@ -17,6 +17,11 @@ public class EmbeddingServiceWorkflowTests
     [Fact]
     public async Task CompleteWorkflow_CreateSearchAndDelete_WorksCorrectly()
     {
+        // Clean out existing data
+        var deleteAllResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
+        deleteAllResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
+
         var documents = new[]
         {
             "The quick brown fox jumps over the lazy dog",
@@ -79,6 +84,11 @@ public class EmbeddingServiceWorkflowTests
     [Fact]
     public async Task SearchRelevance_ReturnsMoreRelevantResultsFirst()
     {
+        // Clean out existing data
+        var deleteResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
+
         var embeddingRequest1 = new EmbeddingRequest
         {
             Text = "Python is a programming language for data science and machine learning"
@@ -118,11 +128,18 @@ public class EmbeddingServiceWorkflowTests
             }
         }
         results[0].Text.Should().Be(embeddingRequest3.Text);
+        results[1].Text.Should().Be(embeddingRequest1.Text);
+        results[2].Text.Should().Be(embeddingRequest2.Text);
     }
 
     [Fact]
     public async Task ConcurrentRequests_HandleMultipleEmbeddingCreations()
     {
+        // Clean out existing data
+        var deleteResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
+
         var tasks = Enumerable.Range(1, 5).Select(async i =>
         {
             var request = new EmbeddingRequest
@@ -153,6 +170,11 @@ public class EmbeddingServiceWorkflowTests
     [Fact]
     public async Task UpdateWorkflow_DeleteAndRecreateDocument()
     {
+        // Clean out existing data
+        var deleteAllResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
+        deleteAllResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
+
         var originalRequest = new EmbeddingRequest
         {
             Text = "Original document text",
