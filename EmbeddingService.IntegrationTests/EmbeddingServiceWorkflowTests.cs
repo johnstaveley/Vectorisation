@@ -108,16 +108,16 @@ public class EmbeddingServiceWorkflowTests
         var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
 
         results.Should().NotBeNull();
-        results!.Should().NotBeEmpty();
+        results.Should().NotBeEmpty();
 
         if (results.Count > 1)
         {
             for (int i = 0; i < results.Count - 1; i++)
             {
-                results[i].Score.Should().BeGreaterThanOrEqualTo(results[i + 1].Score, 
-                    "Results should be ordered by score descending");
+                results[i].Score.Should().BeGreaterThanOrEqualTo(results[i + 1].Score, "Results should be ordered by score descending");
             }
         }
+        results[0].Text.Should().Be(embeddingRequest3.Text);
     }
 
     [Fact]

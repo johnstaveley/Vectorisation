@@ -37,7 +37,6 @@ public class EmbeddingServiceTests
         embeddingResponse.Embedding.Should().NotBeEmpty();
         embeddingResponse.Text.Should().Be(request.Text);
     }
-
     [Fact]
     public async Task CreateEmbedding_WithEmptyText_ReturnsBadRequest()
     {
@@ -50,7 +49,6 @@ public class EmbeddingServiceTests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-
     [Fact]
     public async Task CreateEmbedding_WithNullText_ReturnsBadRequest()
     {
@@ -63,7 +61,6 @@ public class EmbeddingServiceTests
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-
     [Fact]
     public async Task GetEmbedding_WithValidId_ReturnsDocument()
     {
@@ -85,7 +82,6 @@ public class EmbeddingServiceTests
         document!.Text.Should().Be(createRequest.Text);
         document.Embedding.Should().NotBeEmpty();
     }
-
     [Fact]
     public async Task GetEmbedding_WithInvalidId_ReturnsNotFound()
     {
@@ -93,7 +89,6 @@ public class EmbeddingServiceTests
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
-
     [Fact]
     public async Task SearchSimilar_WithValidQuery_ReturnsResults()
     {

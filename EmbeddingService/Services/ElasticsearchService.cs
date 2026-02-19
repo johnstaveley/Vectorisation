@@ -62,7 +62,7 @@ public class ElasticsearchService
             return new List<SearchResult>();
         }
         var numCandidates = Math.Max(topK * 2, 100);
-        var floatEmbedding = queryEmbedding.Select(d => (float)d).ToArray();
+        var floatEmbedding = queryEmbedding.Select(d => (float) d).ToArray();
         var searchResponse = await _client.SearchAsync<EmbeddingDocument>(s => s
             .Indices(_indexName)
             .Knn(k => k
@@ -76,7 +76,7 @@ public class ElasticsearchService
             _logger.LogError("Search failed: {Error}", searchResponse.ElasticsearchServerError);
             throw new InvalidOperationException($"Search failed: {searchResponse.ElasticsearchServerError}");
         }
-        return searchResponse.Hits.Select(hit => new SearchResult
+        return searchResponse.Hits.DistinctBy(a => a.Source.Text).Select(hit => new SearchResult
         {
             Id = hit.Source!.Id,
             Text = hit.Source.Text,
