@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 
 namespace EmbeddingService.IntegrationTests;
 
+[Collection("Integration Tests")]
 public class EmbeddingServiceTests
 {
     private readonly HttpClient _client;

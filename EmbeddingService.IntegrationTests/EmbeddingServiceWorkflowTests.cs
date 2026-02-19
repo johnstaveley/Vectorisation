@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 
 namespace EmbeddingService.IntegrationTests;
 
+[Collection("Integration Tests")]
 public class EmbeddingServiceWorkflowTests
 {
     private readonly HttpClient _client;
@@ -18,6 +19,7 @@ public class EmbeddingServiceWorkflowTests
     public async Task CompleteWorkflow_CreateSearchAndDelete_WorksCorrectly()
     {
         // Clean out existing data
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
         var deleteAllResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
         deleteAllResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         await Task.Delay(1500, TestContext.Current.CancellationToken);
@@ -85,8 +87,9 @@ public class EmbeddingServiceWorkflowTests
     public async Task SearchRelevance_ReturnsMoreRelevantResultsFirst()
     {
         // Clean out existing data
-        var deleteResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
+        var deleteAllResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
+        deleteAllResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         await Task.Delay(1500, TestContext.Current.CancellationToken);
 
         var embeddingRequest1 = new EmbeddingRequest
@@ -136,8 +139,9 @@ public class EmbeddingServiceWorkflowTests
     public async Task ConcurrentRequests_HandleMultipleEmbeddingCreations()
     {
         // Clean out existing data
-        var deleteResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
-        deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
+        var deleteAllResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
+        deleteAllResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         await Task.Delay(1500, TestContext.Current.CancellationToken);
 
         var tasks = Enumerable.Range(1, 5).Select(async i =>
@@ -171,6 +175,7 @@ public class EmbeddingServiceWorkflowTests
     public async Task UpdateWorkflow_DeleteAndRecreateDocument()
     {
         // Clean out existing data
+        await Task.Delay(1500, TestContext.Current.CancellationToken);
         var deleteAllResponse = await _client.DeleteAsync("/embeddings", TestContext.Current.CancellationToken);
         deleteAllResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         await Task.Delay(1500, TestContext.Current.CancellationToken);
