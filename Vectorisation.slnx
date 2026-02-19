@@ -4,6 +4,7 @@
   </Folder>
   <Project Path="EmbeddingService.IntegrationTests/EmbeddingService.IntegrationTests.csproj" />
   <Project Path="EmbeddingService.Models/EmbeddingService.Models.csproj" />
+  <Project Path="EmbeddingService.UnitTests/EmbeddingService.UnitTests.csproj" />
   <Project Path="EmbeddingService/EmbeddingService.csproj" />
   <Project Path="Platform/Platform.csproj" />
   <Project Path="ServiceDefaults/Platform.ServiceDefaults.csproj" />
