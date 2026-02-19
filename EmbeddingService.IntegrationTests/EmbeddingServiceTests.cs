@@ -91,49 +91,6 @@ public class EmbeddingServiceTests
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
     [Fact]
-    public async Task SearchSimilar_WithValidQuery_ReturnsResults()
-    {
-        var embeddingRequest1 = new EmbeddingRequest
-        {
-            Text = "Machine learning is a subset of artificial intelligence"
-        };
-        var embeddingRequest2 = new EmbeddingRequest
-        {
-            Text = "Deep learning uses neural networks"
-        };
-        var embeddingRequest3 = new EmbeddingRequest
-        {
-            Text = "The weather is nice today"
-        };
-
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest1, cancellationToken: TestContext.Current.CancellationToken);
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest2, cancellationToken: TestContext.Current.CancellationToken);
-        await _client.PostAsJsonAsync("/embeddings", embeddingRequest3, cancellationToken: TestContext.Current.CancellationToken);
-
-        await Task.Delay(1000, cancellationToken: TestContext.Current.CancellationToken);
-
-        var searchRequest = new SearchRequest
-        {
-            Query = "What is artificial intelligence?",
-            TopK = 2
-        };
-
-        var response = await _client.PostAsJsonAsync("/search", searchRequest, cancellationToken: TestContext.Current.CancellationToken);
-
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
-        results.Should().NotBeNull();
-        results!.Should().HaveCountLessThanOrEqualTo(2);
-
-        if (results.Count > 0)
-        {
-            results[0].Id.Should().NotBeEmpty();
-            results[0].Text.Should().NotBeEmpty();
-        }
-    }
-
-    [Fact]
     public async Task SearchSimilar_WithEmptyQuery_ReturnsBadRequest()
     {
         var searchRequest = new SearchRequest

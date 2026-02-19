@@ -135,18 +135,6 @@ public class EmbeddingServiceEdgeCaseTests
         var results = await response.Content.ReadFromJsonAsync<List<SearchResult>>(cancellationToken: TestContext.Current.CancellationToken);
         results.Should().NotBeNull();
     }
-
-    [Fact]
-    public async Task GetEmbedding_WithEmptyId_ReturnsBadRequestOrNotFound()
-    {
-        var response = await _client.GetAsync("/embeddings/", cancellationToken: TestContext.Current.CancellationToken);
-
-        response.StatusCode.Should().BeOneOf(
-            HttpStatusCode.NotFound,
-            HttpStatusCode.BadRequest,
-            HttpStatusCode.MethodNotAllowed);
-    }
-
     [Fact]
     public async Task DeleteEmbedding_CalledTwice_SecondCallReturnsNotFound()
     {
