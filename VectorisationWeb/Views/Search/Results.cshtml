@@ -1,0 +1,70 @@
+@model List<EmbeddingService.Models.SearchResult>
+
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Search Query: "@ViewBag.SearchQuery"</h5>
+            <a asp-controller="Search" asp-action="Index" class="btn btn-primary btn-sm">New Search</a>
+        </div>
+        <div class="card-body">
+            @if (Model == null || !Model.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No results found for your search query.
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-3">Found @Model.Count result(s)</p>
+                
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var result = Model[i];
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Result #@(i + 1)</h6>
+                                <div>
+                                    <span class="badge bg-primary">Score: @result.Score.ToString("F4")</span>
+                                    <a asp-controller="Embeddings" asp-action="Details" asp-route-id="@result.Id" class="btn btn-sm btn-outline-primary ms-2">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <strong>ID:</strong> <code>@result.Id</code>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Text:</strong>
+                                <p class="mt-1">@result.Text</p>
+                            </div>
+                            @if (result.Metadata != null && result.Metadata.Any())
+                            {
+                                <div class="mb-2">
+                                    <strong>Metadata:</strong>
+                                    <div class="mt-1">
+                                        @foreach (var kvp in result.Metadata)
+                                        {
+                                            <span class="badge bg-secondary me-1">@kvp.Key: @kvp.Value</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            <div class="progress mt-2" style="height: 25px;">
+                                <div class="progress-bar" role="progressbar" style="width: @((result.Score * 100).ToString("F2"))%;" aria-valuenow="@result.Score" aria-valuemin="0" aria-valuemax="1">
+                                    Similarity: @((result.Score * 100).ToString("F2"))%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

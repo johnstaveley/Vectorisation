@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Search Embeddings";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Search for Similar Embeddings</h5>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Search" asp-action="Search" method="post">
+                <div class="mb-3">
+                    <label for="Query" class="form-label">Search Query</label>
+                    <textarea class="form-control" id="Query" name="Query" rows="3" required placeholder="Enter your search query..."></textarea>
+                    <div class="form-text">Enter text to find similar embeddings in the database.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="TopK" class="form-label">Number of Results</label>
+                    <input type="number" class="form-control" id="TopK" name="TopK" value="5" min="1" max="100" required />
+                    <div class="form-text">Maximum number of results to return (1-100).</div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <p class="text-muted">
+            <strong>How it works:</strong> Enter a search query and the system will convert it to an embedding vector 
+            and find the most similar embeddings in the database using vector similarity search.
+        </p>
+    </div>
+</div>

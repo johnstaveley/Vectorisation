@@ -13,4 +13,8 @@ var embeddingService = builder.AddProject("embeddingservice", "../EmbeddingServi
     .WaitFor(ollama)
     .WaitFor(elasticsearch);
 
+var web = builder.AddProject("webservice", "../VectorisationWeb/VectorisationWeb.csproj")
+    .WithReference(embeddingService)
+    .WaitFor(embeddingService);
+
 builder.Build().Run();

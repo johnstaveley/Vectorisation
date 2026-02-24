@@ -1,0 +1,74 @@
+@model EmbeddingService.Models.EmbeddingDocument
+
+@{
+    ViewData["Title"] = "Embedding Details";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Embedding Information</h5>
+            <div>
+                <a asp-controller="Embeddings" asp-action="Index" class="btn btn-secondary btn-sm">Back to List</a>
+                <form asp-controller="Embeddings" asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this embedding?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label fw-bold">ID:</label>
+                <p class="form-control-plaintext">@Model.Id</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Text:</label>
+                <p class="form-control-plaintext">@Model.Text</p>
+            </div>
+
+            @if (Model.Metadata != null && Model.Metadata.Any())
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Metadata:</label>
+                    <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var kvp in Model.Metadata)
+                            {
+                                <tr>
+                                    <td>@kvp.Key</td>
+                                    <td>@kvp.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Embedding Vector:</label>
+                <details>
+                    <summary class="btn btn-sm btn-outline-secondary mb-2">Show Embedding (@Model.Embedding.Length dimensions)</summary>
+                    <div class="border rounded p-3 bg-light" style="max-height: 300px; overflow-y: auto;">
+                        <code style="white-space: pre-wrap; word-break: break-all;">[@string.Join(", ", Model.Embedding.Select((v, i) => $"{v:F6}"))]</code>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</div>

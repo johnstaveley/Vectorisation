@@ -1,0 +1,116 @@
+@{
+    ViewData["Title"] = "Embeddings";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">@ViewData["Title"]</h1>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Create New Embedding</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Embeddings" asp-action="Create" method="post">
+                        <div class="mb-3">
+                            <label for="Text" class="form-label">Text</label>
+                            <textarea class="form-control" id="Text" name="Text" rows="4" required placeholder="Enter text to create embedding..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Metadata (Optional)</label>
+                            <div id="metadataContainer">
+                                <div class="row mb-2">
+                                    <div class="col-5">
+                                        <input type="text" class="form-control" name="Metadata[0].Key" placeholder="Key" />
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="text" class="form-control" name="Metadata[0].Value" placeholder="Value" />
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-sm btn-success" onclick="addMetadataRow()">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Embedding</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Get Embedding by ID</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Embeddings" asp-action="Details" method="get">
+                        <div class="mb-3">
+                            <label for="id" class="form-label">Embedding ID</label>
+                            <input type="text" class="form-control" id="id" name="id" required placeholder="Enter embedding ID..." />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Get Embedding</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Danger Zone</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Delete all embeddings from the database. This action cannot be undone.</p>
+                    <form asp-controller="Embeddings" asp-action="DeleteAll" method="post" onsubmit="return confirm('Are you sure you want to delete ALL embeddings? This action cannot be undone.');">
+                        <button type="submit" class="btn btn-danger">Delete All Embeddings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let metadataCount = 1;
+        
+        function addMetadataRow() {
+            const container = document.getElementById('metadataContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'row mb-2';
+            newRow.innerHTML = `
+                <div class="col-5">
+                    <input type="text" class="form-control" name="Metadata[${metadataCount}].Key" placeholder="Key" />
+                </div>
+                <div class="col-5">
+                    <input type="text" class="form-control" name="Metadata[${metadataCount}].Value" placeholder="Value" />
+                </div>
+                <div class="col-2">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeMetadataRow(this)">-</button>
+                </div>
+            `;
+            container.appendChild(newRow);
+            metadataCount++;
+        }
+        
+        function removeMetadataRow(button) {
+            button.closest('.row').remove();
+        }
+    </script>
+}

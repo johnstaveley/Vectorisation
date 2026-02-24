@@ -8,4 +8,5 @@
   <Project Path="EmbeddingService/EmbeddingService.csproj" />
   <Project Path="Platform/Platform.csproj" />
   <Project Path="ServiceDefaults/Platform.ServiceDefaults.csproj" />
+  <Project Path="VectorisationWeb/VectorisationWeb.csproj" Id="97c6d694-f6d5-41b8-b50f-8e30f50d3aac" />
 </Solution>
