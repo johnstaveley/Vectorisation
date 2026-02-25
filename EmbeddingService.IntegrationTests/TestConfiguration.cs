@@ -9,6 +9,7 @@ public sealed class TestConfiguration
     public static TestConfiguration Instance => _instance.Value;
 
     public string WebServerUrl { get; }
+    public int SampleSize { get; }
 
     private TestConfiguration()
     {
@@ -19,5 +20,8 @@ public sealed class TestConfiguration
 
         WebServerUrl = configuration["TestSettings:WebServerUrl"] 
             ?? throw new InvalidOperationException("WebServerUrl not configured in appsettings.json under TestSettings section");
+
+        SampleSize = int.TryParse(configuration["BulkLoad:SampleSize"], out var size) ? size : 100;
     }
 }
+

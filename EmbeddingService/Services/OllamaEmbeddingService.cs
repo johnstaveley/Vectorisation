@@ -33,6 +33,7 @@ public class OllamaEmbeddingService
             };
             var json = JsonSerializer.Serialize(request);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
+            _httpClient.Timeout = TimeSpan.FromMinutes(5);
             var response = await _httpClient.PostAsync("/api/embed", content, cancellationToken);
             response.EnsureSuccessStatusCode();
             var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
