@@ -4,9 +4,13 @@
   </Folder>
   <Project Path="EmbeddingService.IntegrationTests/EmbeddingService.IntegrationTests.csproj" />
   <Project Path="EmbeddingService.Models/EmbeddingService.Models.csproj" />
-  <Project Path="EmbeddingService.UnitTests/EmbeddingService.UnitTests.csproj" />
+  <Project Path="EmbeddingService.UnitTests/EmbeddingService.UnitTests.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
   <Project Path="EmbeddingService/EmbeddingService.csproj" />
   <Project Path="Platform/Platform.csproj" />
   <Project Path="ServiceDefaults/Platform.ServiceDefaults.csproj" />
-  <Project Path="VectorisationWeb/VectorisationWeb.csproj" Id="97c6d694-f6d5-41b8-b50f-8e30f50d3aac" />
+  <Project Path="VectorisationWeb/VectorisationWeb.csproj" Id="97c6d694-f6d5-41b8-b50f-8e30f50d3aac">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
 </Solution>
