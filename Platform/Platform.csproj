@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.0" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,7 +8,7 @@
     <UserSecretsId>531751e4-c397-4937-b7c1-5bd8ca91da2c</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.1" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="13.1.2" />
     <PackageReference Include="Aspire.Hosting.Elasticsearch" Version="13.1.0" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.Elasticsearch.Extensions" Version="13.1.1" />
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.1.1" />
