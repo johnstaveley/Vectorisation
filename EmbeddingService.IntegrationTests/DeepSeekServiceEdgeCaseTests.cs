@@ -13,6 +13,7 @@ public class DeepSeekServiceEdgeCaseTests
     public DeepSeekServiceEdgeCaseTests()
     {
         _client = new DefaultHttpClientFactory().CreateClient();
+        _client.Timeout = TimeSpan.FromMinutes(5);
     }
 
     [Fact]
@@ -29,9 +30,9 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"Special Characters Response: {result["Response"]}");
+        Console.WriteLine($"Special Characters Response: {result["response"]}");
     }
 
     [Fact]
@@ -48,9 +49,9 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"Unicode Response: {result["Response"]}");
+        Console.WriteLine($"Unicode Response: {result["response"]}");
     }
 
     [Fact]
@@ -70,9 +71,9 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"Multiline Response: {result["Response"]}");
+        Console.WriteLine($"Multiline Response: {result["response"]}");
     }
 
     [Fact]
@@ -93,9 +94,9 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"High Temperature Response: {result["Response"]}");
+        Console.WriteLine($"High Temperature Response: {result["response"]}");
     }
 
     [Fact]
@@ -116,10 +117,10 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
-        result["Response"].Length.Should().BeLessThan(500, "response should be truncated due to low max tokens");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
+        result["response"].Length.Should().BeLessThan(500, "response should be truncated due to low max tokens");
         
-        Console.WriteLine($"Short Response ({result["Response"].Length} chars): {result["Response"]}");
+        Console.WriteLine($"Short Response ({result["response"].Length} chars): {result["response"]}");
     }
 
     [Fact]
@@ -136,9 +137,9 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"Emoji Response: {result["Response"]}");
+        Console.WriteLine($"Emoji Response: {result["response"]}");
     }
 
     [Fact]
@@ -155,10 +156,10 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
-        result["Response"].Should().Contain("{", "response should contain JSON");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
+        result["response"].Should().Contain("{", "response should contain JSON");
         
-        Console.WriteLine($"JSON Response: {result["Response"]}");
+        Console.WriteLine($"JSON Response: {result["response"]}");
     }
 
     [Fact]
@@ -179,10 +180,10 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
-        result["Response"].Should().Contain("56877", "should contain the correct answer");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
+        result["response"].Should().Contain("56877", "should contain the correct answer");
         
-        Console.WriteLine($"Math Response: {result["Response"]}");
+        Console.WriteLine($"Math Response: {result["response"]}");
     }
 
     [Fact]
@@ -204,8 +205,8 @@ public class DeepSeekServiceEdgeCaseTests
             var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
             var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
             
-            responses.Add(result!["Response"]);
-            await Task.Delay(500);
+            responses.Add(result!["response"]);
+            await Task.Delay(500, TestContext.Current.CancellationToken);
         }
 
         responses.Should().AllSatisfy(r => r.Should().Contain("Tokyo"));
@@ -244,9 +245,9 @@ public class DeepSeekServiceEdgeCaseTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
-        result["Response"].Should().Contain("SELECT", "response should contain SQL");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
+        result["response"].Should().Contain("SELECT", "response should contain SQL");
         
-        Console.WriteLine($"SQL Response: {result["Response"]}");
+        Console.WriteLine($"SQL Response: {result["response"]}");
     }
 }

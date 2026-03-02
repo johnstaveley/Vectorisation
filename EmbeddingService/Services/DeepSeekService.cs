@@ -1,24 +1,21 @@
 using System.Text;
-using System.Text.Json;
 using EmbeddingService.Models;
+using OllamaSharp;
 
 namespace EmbeddingService.Services;
 
 public class DeepSeekService
 {
-    private readonly HttpClient _httpClient;
+    private readonly OllamaApiClient _ollamaClient;
     private readonly ILogger<DeepSeekService> _logger;
     private readonly string _modelName;
-    private readonly string _baseUrl;
 
-    public DeepSeekService(IConfiguration configuration, ILogger<DeepSeekService> logger,
-        IHttpClientFactory httpClientFactory)
+    public DeepSeekService(IConfiguration configuration, ILogger<DeepSeekService> logger)
     {
-        _baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:50494";
-        _baseUrl = _baseUrl.Replace("Endpoint=", "");
-        _httpClient = httpClientFactory.CreateClient();
-        _httpClient.BaseAddress = new Uri(_baseUrl);
-        _httpClient.Timeout = TimeSpan.FromMinutes(10);
+        var baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:50494";
+        baseUrl = baseUrl.Replace("Endpoint=", "");
+
+        _ollamaClient = new OllamaApiClient(new Uri(baseUrl));
         _logger = logger;
         _modelName = configuration["Ollama:ChatModel"] ?? "deepseek-r1:1.5b";
     }
@@ -29,74 +26,67 @@ public class DeepSeekService
         {
             _logger.LogInformation("Generating response for prompt: {PromptLength} characters", prompt.Length);
 
-            var request = new
+            var responseBuilder = new StringBuilder();
+
+            await foreach (var stream in _ollamaClient.GenerateAsync(new OllamaSharp.Models.GenerateRequest
             {
-                model = _modelName,
-                prompt = prompt,
-                stream = false,
-                options = options ?? new DeepSeekOptions()
-            };
-
-            var json = JsonSerializer.Serialize(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync("/api/generate", content, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<DeepSeekResponse>(responseJson);
-
-            if (result == null || string.IsNullOrEmpty(result.Response))
+                Model = _modelName,
+                Prompt = prompt,
+                Options = ConvertOptions(options)
+            }, cancellationToken))
             {
-                throw new InvalidOperationException("Failed to generate response from DeepSeek model");
+                responseBuilder.Append(stream?.Response);
             }
 
-            _logger.LogInformation("Generated response: {ResponseLength} characters in {Duration}ms", 
-                result.Response.Length, result.TotalDuration / 1000000);
+            var response = responseBuilder.ToString();
 
-            return result.Response;
+            if (string.IsNullOrEmpty(response))
+            {
+                throw new InvalidOperationException("Failed to generate response from chat model");
+            }
+
+            _logger.LogInformation("Generated response: {ResponseLength} characters", response.Length);
+
+            return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error generating response from DeepSeek model");
+            _logger.LogError(ex, "Error generating response from chat model");
             throw;
         }
     }
 
-    public async Task<string> ChatAsync(string message, List<int>? context = null, DeepSeekOptions? options = null, CancellationToken cancellationToken = default)
+    public async Task<string> ChatAsync(string message, long[]? context = null, DeepSeekOptions? options = null, CancellationToken cancellationToken = default)
     {
         try
         {
             _logger.LogInformation("Processing chat message: {MessageLength} characters", message.Length);
 
-            var request = new
+            var responseBuilder = new StringBuilder();
+
+            await foreach (var stream in _ollamaClient.GenerateAsync(new OllamaSharp.Models.GenerateRequest
             {
-                model = _modelName,
-                prompt = message,
-                stream = false,
-                context = context,
-                options = options ?? new DeepSeekOptions()
-            };
+                Model = _modelName,
+                Prompt = message,
+                Context = context,
+                Options = ConvertOptions(options)
+            }, cancellationToken))
+            {
+                responseBuilder.Append(stream?.Response);
+            }
 
-            var json = JsonSerializer.Serialize(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = responseBuilder.ToString();
 
-            var response = await _httpClient.PostAsync("/api/generate", content, cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-            var result = JsonSerializer.Deserialize<DeepSeekResponse>(responseJson);
-
-            if (result == null || string.IsNullOrEmpty(result.Response))
+            if (string.IsNullOrEmpty(response))
             {
                 throw new InvalidOperationException("Failed to generate chat response");
             }
 
-            return result.Response;
+            return response;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in chat with DeepSeek model");
+            _logger.LogError(ex, "Error in chat with model");
             throw;
         }
     }
@@ -105,19 +95,11 @@ public class DeepSeekService
     {
         try
         {
-            _logger.LogInformation("Checking if DeepSeek model {ModelName} is available", _modelName);
+            _logger.LogInformation("Checking if chat model {ModelName} is available", _modelName);
 
-            var response = await _httpClient.GetAsync("/api/tags", cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogWarning("Could not check available models");
-                return false;
-            }
+            var models = await _ollamaClient.ListLocalModelsAsync(cancellationToken);
 
-            var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-            var models = JsonSerializer.Deserialize<OllamaModelsResponse>(responseJson);
-
-            if (models?.Models == null || !models.Models.Any(m => m.Name.Contains(_modelName)))
+            if (models == null || !models.Any(m => m.Name.Contains(_modelName)))
             {
                 _logger.LogInformation("Model {ModelName} not found. Attempting to pull...", _modelName);
                 await PullModelAsync(cancellationToken);
@@ -129,7 +111,7 @@ public class DeepSeekService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error checking DeepSeek model availability");
+            _logger.LogError(ex, "Error checking chat model availability");
             return false;
         }
     }
@@ -140,17 +122,10 @@ public class DeepSeekService
         {
             _logger.LogInformation("Pulling model {ModelName}. This may take several minutes...", _modelName);
 
-            var request = new
+            await foreach (var status in _ollamaClient.PullModelAsync(_modelName, cancellationToken))
             {
-                name = _modelName,
-                stream = false
-            };
-
-            var json = JsonSerializer.Serialize(request);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync("/api/pull", content, cancellationToken);
-            response.EnsureSuccessStatusCode();
+                _logger.LogInformation("Pull progress: {Status}", status?.Status);
+            }
 
             _logger.LogInformation("Successfully pulled model {ModelName}", _modelName);
         }
@@ -162,22 +137,30 @@ public class DeepSeekService
         }
     }
 
-    public async Task<List<OllamaModelInfo>> GetAvailableModelsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<OllamaSharp.Models.Model>> GetAvailableModelsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _httpClient.GetAsync("/api/tags", cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            var responseJson = await response.Content.ReadAsStringAsync(cancellationToken);
-            var models = JsonSerializer.Deserialize<OllamaModelsResponse>(responseJson);
-
-            return models?.Models ?? new List<OllamaModelInfo>();
+            var models = await _ollamaClient.ListLocalModelsAsync(cancellationToken);
+            return models ?? Enumerable.Empty<OllamaSharp.Models.Model>();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting available models");
-            return new List<OllamaModelInfo>();
+            return Enumerable.Empty<OllamaSharp.Models.Model>();
         }
+    }
+
+    private OllamaSharp.Models.RequestOptions? ConvertOptions(DeepSeekOptions? options)
+    {
+        if (options == null)
+            return null;
+
+        return new OllamaSharp.Models.RequestOptions
+        {
+            Temperature = (float)options.Temperature,
+            TopP = (float)options.TopP,
+            NumPredict = options.MaxTokens
+        };
     }
 }

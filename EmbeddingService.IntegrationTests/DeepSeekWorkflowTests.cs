@@ -13,6 +13,7 @@ public class DeepSeekWorkflowTests
     public DeepSeekWorkflowTests()
     {
         _client = new DefaultHttpClientFactory().CreateClient();
+        _client.Timeout = TimeSpan.FromMinutes(5);
     }
 
     [Fact]
@@ -35,7 +36,7 @@ public class DeepSeekWorkflowTests
 
         var deepSeekResult = await deepSeekResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         deepSeekResult.Should().NotBeNull();
-        var generatedPoem = deepSeekResult!["Response"];
+        var generatedPoem = deepSeekResult!["response"];
         
         Console.WriteLine($"Generated Poem:\n{generatedPoem}\n");
 
@@ -79,7 +80,7 @@ public class DeepSeekWorkflowTests
         {
             var embeddingRequest = new EmbeddingRequest { Text = doc };
             await _client.PostAsJsonAsync("/embeddings", embeddingRequest, TestContext.Current.CancellationToken);
-            await Task.Delay(500);
+            await Task.Delay(500, TestContext.Current.CancellationToken);
         }
 
         Console.WriteLine("Step 2: Searching for similar documents...");
@@ -111,7 +112,7 @@ public class DeepSeekWorkflowTests
         var summaryResult = await summaryResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         summaryResult.Should().NotBeNull();
         
-        Console.WriteLine($"Summary: {summaryResult!["Response"]}");
+        Console.WriteLine($"Summary: {summaryResult!["response"]}");
     }
 
     [Fact]
@@ -133,7 +134,7 @@ public class DeepSeekWorkflowTests
         var questionResponse = await _client.PostAsJsonAsync("/deepseek/generate", questionRequest, TestContext.Current.CancellationToken);
         var questionResult = await questionResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         
-        var questions = questionResult!["Response"];
+        var questions = questionResult!["response"];
         Console.WriteLine($"Generated Questions:\n{questions}\n");
 
         Console.WriteLine("Step 2: Answer the first question...");
@@ -151,9 +152,9 @@ public class DeepSeekWorkflowTests
 
         var answerResult = await answerResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         answerResult.Should().NotBeNull();
-        answerResult!["Response"].Should().Contain("Jupiter");
+        answerResult!["response"].Should().Contain("Jupiter");
         
-        Console.WriteLine($"Answer: {answerResult["Response"]}");
+        Console.WriteLine($"Answer: {answerResult["response"]}");
     }
 
     [Fact]
@@ -181,9 +182,9 @@ public class DeepSeekWorkflowTests
             var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
             
             Console.WriteLine($"\nTemperature {temp}:");
-            Console.WriteLine(result!["Response"]);
+            Console.WriteLine(result!["response"]);
             
-            await Task.Delay(1000);
+            await Task.Delay(1000, TestContext.Current.CancellationToken);
         }
     }
 
@@ -205,7 +206,7 @@ public class DeepSeekWorkflowTests
         var codeResponse = await _client.PostAsJsonAsync("/deepseek/generate", codeRequest, TestContext.Current.CancellationToken);
         var codeResult = await codeResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         
-        var generatedCode = codeResult!["Response"];
+        var generatedCode = codeResult!["response"];
         Console.WriteLine($"Generated Code:\n{generatedCode}\n");
 
         Console.WriteLine("Step 2: Explain the code...");
@@ -220,7 +221,7 @@ public class DeepSeekWorkflowTests
         var explainResult = await explainResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         explainResult.Should().NotBeNull();
         
-        Console.WriteLine($"Explanation:\n{explainResult!["Response"]}");
+        Console.WriteLine($"Explanation:\n{explainResult!["response"]}");
     }
 
     [Fact]
@@ -246,7 +247,7 @@ public class DeepSeekWorkflowTests
             var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
             var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
             
-            return new { Prompt = prompt, Response = result!["Response"] };
+            return new { Prompt = prompt, Response = result!["response"] };
         });
 
         var results = await Task.WhenAll(tasks);

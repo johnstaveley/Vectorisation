@@ -13,6 +13,7 @@ public class DeepSeekServiceTests
     public DeepSeekServiceTests()
     {
         _client = new DefaultHttpClientFactory().CreateClient();
+        _client.Timeout = TimeSpan.FromMinutes(5);
     }
 
     [Fact]
@@ -29,12 +30,11 @@ public class DeepSeekServiceTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result.Should().ContainKey("Response");
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result.Should().ContainKey("response");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"DeepSeek Response: {result["Response"]}");
+        Console.WriteLine($"DeepSeek Response: {result["response"]}");
     }
-
     [Fact]
     public async Task DeepSeekGenerate_WithCustomOptions_ReturnsResponse()
     {
@@ -55,9 +55,9 @@ public class DeepSeekServiceTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"Haiku Response: {result["Response"]}");
+        Console.WriteLine($"Haiku Response: {result["response"]}");
     }
 
     [Fact]
@@ -100,10 +100,10 @@ public class DeepSeekServiceTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result.Should().ContainKey("Response");
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
+        result.Should().ContainKey("response");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"Chat Response: {result["Response"]}");
+        Console.WriteLine($"Chat Response: {result["response"]}");
     }
 
     [Fact]
@@ -155,12 +155,11 @@ public class DeepSeekServiceTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
-        result["Response"].Length.Should().BeGreaterThan(100, "detailed response should be substantial");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
+        result["response"].Length.Should().BeGreaterThan(100, "detailed response should be substantial");
         
-        Console.WriteLine($"Long Response Length: {result["Response"].Length} characters");
+        Console.WriteLine($"Long Response Length: {result["response"].Length} characters");
     }
-
     [Fact]
     public async Task DeepSeekGenerate_WithCodeRequest_ReturnsCode()
     {
@@ -179,10 +178,10 @@ public class DeepSeekServiceTests
 
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
-        result!["Response"].Should().NotBeNullOrWhiteSpace();
-        result["Response"].Should().Contain("factorial", "response should be about factorial");
+        result!["response"].Should().NotBeNullOrWhiteSpace();
+        result["response"].Should().Contain("factorial", "response should be about factorial");
         
-        Console.WriteLine($"Code Response:\n{result["Response"]}");
+        Console.WriteLine($"Code Response:\n{result["response"]}");
     }
 
     [Fact]
@@ -199,7 +198,7 @@ public class DeepSeekServiceTests
         var firstResult = await firstResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         firstResult.Should().NotBeNull();
         
-        Console.WriteLine($"First Response: {firstResult!["Response"]}");
+        Console.WriteLine($"First Response: {firstResult!["response"]}");
 
         var secondMessage = new DeepSeekRequest
         {
@@ -212,7 +211,7 @@ public class DeepSeekServiceTests
         var secondResult = await secondResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         secondResult.Should().NotBeNull();
         
-        Console.WriteLine($"Second Response: {secondResult!["Response"]}");
+        Console.WriteLine($"Second Response: {secondResult!["response"]}");
     }
 
     [Fact]
@@ -230,17 +229,17 @@ public class DeepSeekServiceTests
         var firstResponse = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
         var firstResult = await firstResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
 
-        await Task.Delay(1000);
+        await Task.Delay(1000, TestContext.Current.CancellationToken);
 
         var secondResponse = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
         var secondResult = await secondResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
 
         firstResult.Should().NotBeNull();
         secondResult.Should().NotBeNull();
-        firstResult!["Response"].Should().Contain("4");
-        secondResult!["Response"].Should().Contain("4");
+        firstResult!["response"].Should().Contain("4");
+        secondResult!["response"].Should().Contain("4");
         
-        Console.WriteLine($"Deterministic Response 1: {firstResult["Response"]}");
-        Console.WriteLine($"Deterministic Response 2: {secondResult["Response"]}");
+        Console.WriteLine($"Deterministic Response 1: {firstResult["response"]}");
+        Console.WriteLine($"Deterministic Response 2: {secondResult["response"]}");
     }
 }
