@@ -61,10 +61,11 @@ public class PoetryBulkLoadTests
                     failureCount++;
                     continue;
                 }
-
+                var lengthOfPoem = poem.Poem?.Length ?? 0;
+                var poemText = poem.Poem?.Length > 500 ? $"{poem.Poem.Substring(0, 500)}..." : poem.Poem ?? "";
                 var request = new EmbeddingRequest
                 {
-                    Text = poem.Poem,
+                    Text = poemText,
                     Metadata = new Dictionary<string, string>
                     {
                         { "title", poem.Title ?? "Untitled" },

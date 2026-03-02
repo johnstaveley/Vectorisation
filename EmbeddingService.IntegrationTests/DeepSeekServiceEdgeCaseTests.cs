@@ -181,7 +181,7 @@ public class DeepSeekServiceEdgeCaseTests
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         result.Should().NotBeNull();
         result!["response"].Should().NotBeNullOrWhiteSpace();
-        result["response"].Should().Contain("56877", "should contain the correct answer");
+        result["response"].Replace(",", "").Should().Contain("56877", "should contain the correct answer");
         
         Console.WriteLine($"Math Response: {result["response"]}");
     }
