@@ -10,6 +10,7 @@ public sealed class TestConfiguration
 
     public string WebServerUrl { get; }
     public int SampleSize { get; }
+    public int MaxCharacters { get; }
 
     private TestConfiguration()
     {
@@ -22,6 +23,7 @@ public sealed class TestConfiguration
             ?? throw new InvalidOperationException("WebServerUrl not configured in appsettings.json under TestSettings section");
 
         SampleSize = int.TryParse(configuration["BulkLoad:SampleSize"], out var size) ? size : 100;
+        MaxCharacters = int.TryParse(configuration["BulkLoad:MaxCharacters"], out var maxChars) ? maxChars : 200;
     }
 }
 

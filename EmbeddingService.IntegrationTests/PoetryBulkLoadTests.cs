@@ -27,8 +27,10 @@ public class PoetryBulkLoadTests
     public async Task LoadSamplePoemsFromCsv_CreatesEmbeddings_Successfully()
     {
         var sampleSize = TestConfiguration.Instance.SampleSize;
+        var maxCharacters = TestConfiguration.Instance.MaxCharacters;
 
         _output.WriteLine($"Loading {sampleSize} poems from embedded resource");
+        _output.WriteLine($"Truncating poems to {maxCharacters} characters");
 
         var poems = LoadPoemsFromEmbeddedResource(sampleSize);
         _output.WriteLine($"Successfully parsed {poems.Count} poems from CSV");
@@ -61,8 +63,9 @@ public class PoetryBulkLoadTests
                     failureCount++;
                     continue;
                 }
-                var lengthOfPoem = poem.Poem?.Length ?? 0;
-                var poemText = poem.Poem?.Length > 500 ? $"{poem.Poem.Substring(0, 500)}..." : poem.Poem ?? "";
+
+                var poemText = TruncateToCompleteWords(poem.Poem, maxCharacters);
+
                 var request = new EmbeddingRequest
                 {
                     Text = poemText,
@@ -147,6 +150,29 @@ public class PoetryBulkLoadTests
         }
     }
 
+    private string TruncateToCompleteWords(string text, int maxCharacters = 200)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        if (text.Length <= maxCharacters)
+        {
+            return text;
+        }
+
+        var truncated = text.Substring(0, maxCharacters);
+        var lastSpaceIndex = truncated.LastIndexOf(' ');
+
+        if (lastSpaceIndex > 0)
+        {
+            return truncated.Substring(0, lastSpaceIndex);
+        }
+
+        return truncated;
+    }
+
     private List<PoetryRecord> LoadPoemsFromEmbeddedResource(int maxRecords)
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -199,39 +225,4 @@ public class PoetryBulkLoadTests
         return records;
     }
 
-    private List<PoetryRecord> LoadPoemsFromCsv(string filePath, int maxRecords)
-    {
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            HasHeaderRecord = true,
-            MissingFieldFound = null,
-            BadDataFound = null,
-            TrimOptions = TrimOptions.Trim
-        };
-
-        using var reader = new StreamReader(filePath);
-        using var csv = new CsvReader(reader, config);
-        
-        var records = new List<PoetryRecord>();
-        csv.Read();
-        csv.ReadHeader();
-
-        while (csv.Read() && records.Count < maxRecords)
-        {
-            try
-            {
-                var record = csv.GetRecord<PoetryRecord>();
-                if (record != null && !string.IsNullOrWhiteSpace(record.Poem))
-                {
-                    records.Add(record);
-                }
-            }
-            catch (Exception ex)
-            {
-                _output.WriteLine($"Error parsing row: {ex.Message}");
-            }
-        }
-
-        return records;
-    }
 }
