@@ -150,7 +150,7 @@ public class PoetryBulkLoadTests
         }
     }
 
-    private string TruncateToCompleteWords(string text, int maxCharacters = 200)
+    private string TruncateToCompleteWords(string text, int maxCharacters)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
