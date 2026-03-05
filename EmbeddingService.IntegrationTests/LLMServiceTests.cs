@@ -6,25 +6,25 @@ using System.Net.Http.Json;
 namespace EmbeddingService.IntegrationTests;
 
 [Collection("Integration Tests")]
-public class DeepSeekServiceTests
+public class LLMServiceTests
 {
     private readonly HttpClient _client;
 
-    public DeepSeekServiceTests()
+    public LLMServiceTests()
     {
         _client = new DefaultHttpClientFactory().CreateClient();
         _client.Timeout = TimeSpan.FromMinutes(5);
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithValidPrompt_ReturnsResponse()
+    public async Task LLMGenerate_WithValidPrompt_ReturnsResponse()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "What is the capital of France?"
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -33,15 +33,15 @@ public class DeepSeekServiceTests
         result.Should().ContainKey("response");
         result!["response"].Should().NotBeNullOrWhiteSpace();
         
-        Console.WriteLine($"DeepSeek Response: {result["response"]}");
+        Console.WriteLine($"LLM Response: {result["response"]}");
     }
     [Fact]
-    public async Task DeepSeekGenerate_WithCustomOptions_ReturnsResponse()
+    public async Task LLMGenerate_WithCustomOptions_ReturnsResponse()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Write a haiku about programming.",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.9,
                 TopP = 0.95,
@@ -49,7 +49,7 @@ public class DeepSeekServiceTests
             }
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -61,40 +61,40 @@ public class DeepSeekServiceTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithEmptyPrompt_ReturnsBadRequest()
+    public async Task LLMGenerate_WithEmptyPrompt_ReturnsBadRequest()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = ""
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithNullPrompt_ReturnsBadRequest()
+    public async Task LLMGenerate_WithNullPrompt_ReturnsBadRequest()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = null!
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
-    public async Task DeepSeekChat_WithValidMessage_ReturnsResponse()
+    public async Task LLMChat_WithValidMessage_ReturnsResponse()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Hello! How are you today?"
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/chat", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/chat", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -107,49 +107,49 @@ public class DeepSeekServiceTests
     }
 
     [Fact]
-    public async Task DeepSeekChat_WithEmptyMessage_ReturnsBadRequest()
+    public async Task LLMChat_WithEmptyMessage_ReturnsBadRequest()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = ""
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/chat", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/chat", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
-    public async Task GetDeepSeekModels_ReturnsModelList()
+    public async Task GetLLMModels_ReturnsModelList()
     {
-        var response = await _client.GetAsync("/deepseek/models", TestContext.Current.CancellationToken);
+        var response = await _client.GetAsync("/LLM/models", TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var models = await response.Content.ReadFromJsonAsync<List<OllamaModelInfo>>(cancellationToken: TestContext.Current.CancellationToken);
         models.Should().NotBeNull();
-        models.Should().NotBeEmpty("at least the deepseek model should be available");
+        models.Should().NotBeEmpty("at least the LLM model should be available");
         
         Console.WriteLine($"Available models: {string.Join(", ", models!.Select(m => m.Name))}");
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithLongPrompt_ReturnsResponse()
+    public async Task LLMGenerate_WithLongPrompt_ReturnsResponse()
     {
         var longPrompt = "Explain the concept of artificial intelligence in detail, including its history, " +
                         "current applications, and future potential. Cover machine learning, deep learning, " +
                         "neural networks, and their practical uses in modern technology.";
 
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = longPrompt,
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 MaxTokens = 1000
             }
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -161,18 +161,18 @@ public class DeepSeekServiceTests
         Console.WriteLine($"Long Response Length: {result["response"].Length} characters");
     }
     [Fact]
-    public async Task DeepSeekGenerate_WithCodeRequest_ReturnsCode()
+    public async Task LLMGenerate_WithCodeRequest_ReturnsCode()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Write a simple C# method that calculates the factorial of a number.",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.3
             }
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -185,14 +185,14 @@ public class DeepSeekServiceTests
     }
 
     [Fact]
-    public async Task DeepSeekChat_MultipleMessages_MaintainsContext()
+    public async Task LLMChat_MultipleMessages_MaintainsContext()
     {
-        var firstMessage = new DeepSeekRequest
+        var firstMessage = new LLMRequest
         {
             Prompt = "My name is Alice. Remember this."
         };
 
-        var firstResponse = await _client.PostAsJsonAsync("/deepseek/chat", firstMessage, TestContext.Current.CancellationToken);
+        var firstResponse = await _client.PostAsJsonAsync("/LLM/chat", firstMessage, TestContext.Current.CancellationToken);
         firstResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var firstResult = await firstResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
@@ -200,12 +200,12 @@ public class DeepSeekServiceTests
         
         Console.WriteLine($"First Response: {firstResult!["response"]}");
 
-        var secondMessage = new DeepSeekRequest
+        var secondMessage = new LLMRequest
         {
             Prompt = "What is my name?"
         };
 
-        var secondResponse = await _client.PostAsJsonAsync("/deepseek/chat", secondMessage, TestContext.Current.CancellationToken);
+        var secondResponse = await _client.PostAsJsonAsync("/LLM/chat", secondMessage, TestContext.Current.CancellationToken);
         secondResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         
         var secondResult = await secondResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
@@ -215,23 +215,23 @@ public class DeepSeekServiceTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithLowTemperature_ProducesDeterministicOutput()
+    public async Task LLMGenerate_WithLowTemperature_ProducesDeterministicOutput()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "What is 2 + 2?",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.0
             }
         };
 
-        var firstResponse = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var firstResponse = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
         var firstResult = await firstResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
 
         await Task.Delay(1000, TestContext.Current.CancellationToken);
 
-        var secondResponse = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var secondResponse = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
         var secondResult = await secondResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
 
         firstResult.Should().NotBeNull();

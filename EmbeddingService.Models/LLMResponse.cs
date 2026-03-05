@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace EmbeddingService.Models;
 
-public class DeepSeekResponse
+public class LLMResponse
 {
     [JsonPropertyName("model")]
     public string Model { get; set; } = string.Empty;

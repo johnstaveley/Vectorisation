@@ -6,37 +6,37 @@ using System.Net.Http.Json;
 namespace EmbeddingService.IntegrationTests;
 
 [Collection("Integration Tests")]
-public class DeepSeekWorkflowTests
+public class LLMWorkflowTests
 {
     private readonly HttpClient _client;
 
-    public DeepSeekWorkflowTests()
+    public LLMWorkflowTests()
     {
         _client = new DefaultHttpClientFactory().CreateClient();
         _client.Timeout = TimeSpan.FromMinutes(5);
     }
 
     [Fact]
-    public async Task Workflow_GenerateTextWithDeepSeek_ThenCreateEmbedding()
+    public async Task Workflow_GenerateTextWithLLM_ThenCreateEmbedding()
     {
         Console.WriteLine("=== Workflow: Generate Text + Create Embedding ===");
 
-        var deepSeekRequest = new DeepSeekRequest
+        var LLMRequest = new LLMRequest
         {
             Prompt = "Write a short poem about artificial intelligence.",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 MaxTokens = 200
             }
         };
 
-        Console.WriteLine("Step 1: Generating poem with DeepSeek...");
-        var deepSeekResponse = await _client.PostAsJsonAsync("/deepseek/generate", deepSeekRequest, TestContext.Current.CancellationToken);
-        deepSeekResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        Console.WriteLine("Step 1: Generating poem with LLM...");
+        var LLMResponse = await _client.PostAsJsonAsync("/LLM/generate", LLMRequest, TestContext.Current.CancellationToken);
+        LLMResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var deepSeekResult = await deepSeekResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
-        deepSeekResult.Should().NotBeNull();
-        var generatedPoem = deepSeekResult!["response"];
+        var LLMResult = await LLMResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
+        LLMResult.Should().NotBeNull();
+        var generatedPoem = LLMResult!["response"];
         
         Console.WriteLine($"Generated Poem:\n{generatedPoem}\n");
 
@@ -46,7 +46,7 @@ public class DeepSeekWorkflowTests
             Text = generatedPoem,
             Metadata = new Dictionary<string, string>
             {
-                { "source", "deepseek-generated" },
+                { "source", "LLM-generated" },
                 { "type", "poem" },
                 { "topic", "AI" }
             }
@@ -64,9 +64,9 @@ public class DeepSeekWorkflowTests
     }
 
     [Fact]
-    public async Task Workflow_DeepSeekSummarizesSearchResults()
+    public async Task Workflow_LLMSummarizesSearchResults()
     {
-        Console.WriteLine("=== Workflow: Search + Summarize with DeepSeek ===");
+        Console.WriteLine("=== Workflow: Search + Summarize with LLM ===");
 
         Console.WriteLine("Step 1: Creating sample documents...");
         var documents = new[]
@@ -99,14 +99,14 @@ public class DeepSeekWorkflowTests
 
         Console.WriteLine($"Found {searchResults!.Count} results");
 
-        Console.WriteLine("Step 3: Using DeepSeek to summarize results...");
+        Console.WriteLine("Step 3: Using LLM to summarize results...");
         var combinedText = string.Join("\n", searchResults.Select(r => r.Text));
-        var summaryRequest = new DeepSeekRequest
+        var summaryRequest = new LLMRequest
         {
             Prompt = $"Summarize these points concisely:\n{combinedText}"
         };
 
-        var summaryResponse = await _client.PostAsJsonAsync("/deepseek/generate", summaryRequest, TestContext.Current.CancellationToken);
+        var summaryResponse = await _client.PostAsJsonAsync("/LLM/generate", summaryRequest, TestContext.Current.CancellationToken);
         summaryResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var summaryResult = await summaryResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
@@ -116,38 +116,38 @@ public class DeepSeekWorkflowTests
     }
 
     [Fact]
-    public async Task Workflow_DeepSeekGeneratesQuestions_SystemAnswers()
+    public async Task Workflow_LLMGeneratesQuestions_SystemAnswers()
     {
-        Console.WriteLine("=== Workflow: DeepSeek Q&A Generation ===");
+        Console.WriteLine("=== Workflow: LLM Q&A Generation ===");
 
         Console.WriteLine("Step 1: Generate questions about a topic...");
-        var questionRequest = new DeepSeekRequest
+        var questionRequest = new LLMRequest
         {
             Prompt = "Generate 3 simple questions about the solar system.",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.7,
                 MaxTokens = 300
             }
         };
 
-        var questionResponse = await _client.PostAsJsonAsync("/deepseek/generate", questionRequest, TestContext.Current.CancellationToken);
+        var questionResponse = await _client.PostAsJsonAsync("/LLM/generate", questionRequest, TestContext.Current.CancellationToken);
         var questionResult = await questionResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         
         var questions = questionResult!["response"];
         Console.WriteLine($"Generated Questions:\n{questions}\n");
 
         Console.WriteLine("Step 2: Answer the first question...");
-        var answerRequest = new DeepSeekRequest
+        var answerRequest = new LLMRequest
         {
             Prompt = $"Answer this question briefly: What is the largest planet in our solar system?",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.3
             }
         };
 
-        var answerResponse = await _client.PostAsJsonAsync("/deepseek/generate", answerRequest, TestContext.Current.CancellationToken);
+        var answerResponse = await _client.PostAsJsonAsync("/LLM/generate", answerRequest, TestContext.Current.CancellationToken);
         answerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var answerResult = await answerResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
@@ -158,7 +158,7 @@ public class DeepSeekWorkflowTests
     }
 
     [Fact]
-    public async Task Workflow_CompareDeepSeekTemperatures()
+    public async Task Workflow_CompareLLMTemperatures()
     {
         Console.WriteLine("=== Workflow: Temperature Comparison ===");
 
@@ -168,17 +168,17 @@ public class DeepSeekWorkflowTests
         
         foreach (var temp in temperatures)
         {
-            var request = new DeepSeekRequest
+            var request = new LLMRequest
             {
                 Prompt = basePrompt,
-                Options = new DeepSeekOptions
+                Options = new LLMOptions
                 {
                     Temperature = temp,
                     MaxTokens = 100
                 }
             };
 
-            var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+            var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
             var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
             
             Console.WriteLine($"\nTemperature {temp}:");
@@ -189,33 +189,33 @@ public class DeepSeekWorkflowTests
     }
 
     [Fact]
-    public async Task Workflow_DeepSeekGeneratesCodeThenExplains()
+    public async Task Workflow_LLMGeneratesCodeThenExplains()
     {
         Console.WriteLine("=== Workflow: Code Generation + Explanation ===");
 
         Console.WriteLine("Step 1: Generate code...");
-        var codeRequest = new DeepSeekRequest
+        var codeRequest = new LLMRequest
         {
             Prompt = "Write a simple C# function to check if a number is prime.",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.3
             }
         };
 
-        var codeResponse = await _client.PostAsJsonAsync("/deepseek/generate", codeRequest, TestContext.Current.CancellationToken);
+        var codeResponse = await _client.PostAsJsonAsync("/LLM/generate", codeRequest, TestContext.Current.CancellationToken);
         var codeResult = await codeResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
         
         var generatedCode = codeResult!["response"];
         Console.WriteLine($"Generated Code:\n{generatedCode}\n");
 
         Console.WriteLine("Step 2: Explain the code...");
-        var explainRequest = new DeepSeekRequest
+        var explainRequest = new LLMRequest
         {
             Prompt = $"Explain this code in simple terms:\n{generatedCode}"
         };
 
-        var explainResponse = await _client.PostAsJsonAsync("/deepseek/generate", explainRequest, TestContext.Current.CancellationToken);
+        var explainResponse = await _client.PostAsJsonAsync("/LLM/generate", explainRequest, TestContext.Current.CancellationToken);
         explainResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var explainResult = await explainResponse.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
@@ -238,13 +238,13 @@ public class DeepSeekWorkflowTests
 
         var tasks = prompts.Select(async prompt =>
         {
-            var request = new DeepSeekRequest
+            var request = new LLMRequest
             {
                 Prompt = prompt,
-                Options = new DeepSeekOptions { Temperature = 0.0 }
+                Options = new LLMOptions { Temperature = 0.0 }
             };
 
-            var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+            var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
             var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
             
             return new { Prompt = prompt, Response = result!["response"] };

@@ -2,13 +2,13 @@ using System.Text.Json.Serialization;
 
 namespace EmbeddingService.Models;
 
-public class DeepSeekRequest
+public class LLMRequest
 {
     public string Prompt { get; set; } = string.Empty;
-    public DeepSeekOptions? Options { get; set; }
+    public LLMOptions? Options { get; set; }
 }
 
-public class DeepSeekOptions
+public class LLMOptions
 {
     [JsonPropertyName("temperature")]
     public double Temperature { get; set; } = 0.7;

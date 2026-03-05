@@ -4,13 +4,13 @@ using OllamaSharp;
 
 namespace EmbeddingService.Services;
 
-public class DeepSeekService
+public class LLMService
 {
     private readonly OllamaApiClient _ollamaClient;
-    private readonly ILogger<DeepSeekService> _logger;
+    private readonly ILogger<LLMService> _logger;
     private readonly string _modelName;
 
-    public DeepSeekService(IConfiguration configuration, ILogger<DeepSeekService> logger)
+    public LLMService(IConfiguration configuration, ILogger<LLMService> logger)
     {
         var baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:50494";
         baseUrl = baseUrl.Replace("Endpoint=", "");
@@ -20,7 +20,7 @@ public class DeepSeekService
         _modelName = configuration["Ollama:ChatModel"] ?? "deepseek-r1:1.5b";
     }
 
-    public async Task<string> GenerateResponseAsync(string prompt, DeepSeekOptions? options = null, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateResponseAsync(string prompt, LLMOptions? options = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -56,7 +56,7 @@ public class DeepSeekService
         }
     }
 
-    public async Task<string> ChatAsync(string message, long[]? context = null, DeepSeekOptions? options = null, CancellationToken cancellationToken = default)
+    public async Task<string> ChatAsync(string message, long[]? context = null, LLMOptions? options = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -151,7 +151,7 @@ public class DeepSeekService
         }
     }
 
-    private OllamaSharp.Models.RequestOptions? ConvertOptions(DeepSeekOptions? options)
+    private OllamaSharp.Models.RequestOptions? ConvertOptions(LLMOptions? options)
     {
         if (options == null)
             return null;

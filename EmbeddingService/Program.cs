@@ -11,7 +11,7 @@ builder.AddElasticsearchClient("elasticsearch");
 
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<OllamaEmbeddingService>();
-builder.Services.AddSingleton<DeepSeekService>();
+builder.Services.AddSingleton<LLMService>();
 builder.Services.AddSingleton<ElasticsearchService>();
 
 var app = builder.Build();
@@ -26,11 +26,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 var ollamaService = app.Services.GetRequiredService<OllamaEmbeddingService>();
-var deepSeekService = app.Services.GetRequiredService<DeepSeekService>();
+var llmService = app.Services.GetRequiredService<LLMService>();
 var elasticService = app.Services.GetRequiredService<ElasticsearchService>();
 
 await ollamaService.EnsureModelPulledAsync();
-await deepSeekService.EnsureModelPulledAsync();
+await llmService.EnsureModelPulledAsync();
 await elasticService.InitializeIndexAsync();
 
 app.MapPost("/embeddings", async (EmbeddingRequest request, OllamaEmbeddingService ollama, ElasticsearchService elastic, CancellationToken ct) =>
@@ -108,38 +108,38 @@ app.MapDelete("/embeddings", async (ElasticsearchService elastic, CancellationTo
     })
     .WithName("DeleteAllEmbeddings");
 
-app.MapPost("/deepseek/generate", async (DeepSeekRequest request, DeepSeekService deepSeek, CancellationToken ct) =>
+app.MapPost("/llm/generate", async (LLMRequest request, LLMService llm, CancellationToken ct) =>
     {
         if (string.IsNullOrWhiteSpace(request.Prompt))
         {
             return Results.BadRequest("Prompt is required");
         }
 
-        var response = await deepSeek.GenerateResponseAsync(request.Prompt, request.Options, ct);
+        var response = await llm.GenerateResponseAsync(request.Prompt, request.Options, ct);
 
         return Results.Ok(new { Response = response });
     })
-    .WithName("DeepSeekGenerate");
+    .WithName("LLMGenerate");
 
-app.MapPost("/deepseek/chat", async (DeepSeekRequest request, DeepSeekService deepSeek, CancellationToken ct) =>
+app.MapPost("/llm/chat", async (LLMRequest request, LLMService llm, CancellationToken ct) =>
     {
         if (string.IsNullOrWhiteSpace(request.Prompt))
         {
             return Results.BadRequest("Message is required");
         }
 
-        var response = await deepSeek.ChatAsync(request.Prompt, null, request.Options, ct);
+        var response = await llm.ChatAsync(request.Prompt, null, request.Options, ct);
 
         return Results.Ok(new { Response = response });
     })
-    .WithName("DeepSeekChat");
+    .WithName("LLMChat");
 
-app.MapGet("/deepseek/models", async (DeepSeekService deepSeek, CancellationToken ct) =>
+app.MapGet("/llm/models", async (LLMService llm, CancellationToken ct) =>
     {
-        var models = await deepSeek.GetAvailableModelsAsync(ct);
+        var models = await llm.GetAvailableModelsAsync(ct);
 
         return Results.Ok(models);
     })
-    .WithName("GetDeepSeekModels");
+    .WithName("GetLLMModels");
 
 app.Run();

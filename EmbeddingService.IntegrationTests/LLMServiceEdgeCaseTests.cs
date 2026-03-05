@@ -6,25 +6,25 @@ using System.Net.Http.Json;
 namespace EmbeddingService.IntegrationTests;
 
 [Collection("Integration Tests")]
-public class DeepSeekServiceEdgeCaseTests
+public class LLMServiceEdgeCaseTests
 {
     private readonly HttpClient _client;
 
-    public DeepSeekServiceEdgeCaseTests()
+    public LLMServiceEdgeCaseTests()
     {
         _client = new DefaultHttpClientFactory().CreateClient();
         _client.Timeout = TimeSpan.FromMinutes(5);
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithSpecialCharacters_HandlesCorrectly()
+    public async Task LLMGenerate_WithSpecialCharacters_HandlesCorrectly()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Explain this symbol: @#$%^&*() and these quotes: \"Hello\" 'World'"
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -36,14 +36,14 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithUnicodeCharacters_HandlesCorrectly()
+    public async Task LLMGenerate_WithUnicodeCharacters_HandlesCorrectly()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Translate 'Hello' to: Chinese (你好), Arabic (مرحبا), Japanese (こんにちは), Russian (Привет)"
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -55,9 +55,9 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithMultilinePrompt_HandlesCorrectly()
+    public async Task LLMGenerate_WithMultilinePrompt_HandlesCorrectly()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = @"Answer these questions:
 1. What is AI?
@@ -65,7 +65,7 @@ public class DeepSeekServiceEdgeCaseTests
 3. What is the difference?"
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -77,18 +77,18 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithVeryHighTemperature_StillReturnsResponse()
+    public async Task LLMGenerate_WithVeryHighTemperature_StillReturnsResponse()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Tell me a creative story about a robot.",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 1.5
             }
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -100,18 +100,18 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithVeryLowMaxTokens_ReturnsShortResponse()
+    public async Task LLMGenerate_WithVeryLowMaxTokens_ReturnsShortResponse()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Explain quantum computing in great detail with examples.",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 MaxTokens = 50
             }
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -124,14 +124,14 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekChat_WithEmoji_HandlesCorrectly()
+    public async Task LLMChat_WithEmoji_HandlesCorrectly()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "What do these emojis mean? 😊🎉🚀💻🌟"
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/chat", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/chat", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -143,14 +143,14 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithJsonRequest_HandlesCorrectly()
+    public async Task LLMGenerate_WithJsonRequest_HandlesCorrectly()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Create a JSON object representing a user with name, age, and email fields."
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -163,18 +163,18 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithMathematicalExpression_CalculatesCorrectly()
+    public async Task LLMGenerate_WithMathematicalExpression_CalculatesCorrectly()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "What is 123 * 456 + 789?",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.0
             }
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -187,12 +187,12 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithRepeatedPrompts_ProducesConsistentResults()
+    public async Task LLMGenerate_WithRepeatedPrompts_ProducesConsistentResults()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "What is the capital of Japan?",
-            Options = new DeepSeekOptions
+            Options = new LLMOptions
             {
                 Temperature = 0.0
             }
@@ -202,7 +202,7 @@ public class DeepSeekServiceEdgeCaseTests
 
         for (int i = 0; i < 3; i++)
         {
-            var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+            var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
             var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>(cancellationToken: TestContext.Current.CancellationToken);
             
             responses.Add(result!["response"]);
@@ -219,27 +219,27 @@ public class DeepSeekServiceEdgeCaseTests
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithWhitespaceOnlyPrompt_ReturnsBadRequest()
+    public async Task LLMGenerate_WithWhitespaceOnlyPrompt_ReturnsBadRequest()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "   \t\n   "
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
-    public async Task DeepSeekGenerate_WithSQLQuery_HandlesCorrectly()
+    public async Task LLMGenerate_WithSQLQuery_HandlesCorrectly()
     {
-        var request = new DeepSeekRequest
+        var request = new LLMRequest
         {
             Prompt = "Write a SQL query to select all users from a 'users' table where age is greater than 18."
         };
 
-        var response = await _client.PostAsJsonAsync("/deepseek/generate", request, TestContext.Current.CancellationToken);
+        var response = await _client.PostAsJsonAsync("/LLM/generate", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
