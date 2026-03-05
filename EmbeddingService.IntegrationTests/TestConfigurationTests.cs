@@ -1,6 +1,6 @@
 using FluentAssertions;
 
-namespace EmbeddingService.IntegrationTests;
+namespace AIService.IntegrationTests;
 
 public class TestConfigurationTests
 {

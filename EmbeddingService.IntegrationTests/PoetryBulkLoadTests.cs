@@ -1,14 +1,14 @@
 using CsvHelper;
 using CsvHelper.Configuration;
-using EmbeddingService.IntegrationTests.Models;
-using EmbeddingService.Models;
+using AIService.IntegrationTests.Models;
+using AIService.Models;
 using FluentAssertions;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Reflection;
 
-namespace EmbeddingService.IntegrationTests;
+namespace AIService.IntegrationTests;
 
 [Collection("Integration Tests")]
 public class PoetryBulkLoadTests

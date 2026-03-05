@@ -1,4 +1,4 @@
-namespace EmbeddingService.Models;
+namespace AIService.Models;
 
 public class SearchRequest
 {

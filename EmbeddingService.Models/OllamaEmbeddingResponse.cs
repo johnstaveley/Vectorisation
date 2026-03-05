@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace EmbeddingService.Models;
+namespace AIService.Models;
 
 
 public class OllamaEmbeddingResponse

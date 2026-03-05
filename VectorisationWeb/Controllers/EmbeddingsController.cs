@@ -1,4 +1,4 @@
-using EmbeddingService.Models;
+using AIService.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace VectorisationWeb.Controllers;

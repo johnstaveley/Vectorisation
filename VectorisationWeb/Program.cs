@@ -8,6 +8,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient("embeddingservice", client =>
 {
     client.BaseAddress = new Uri("http://embeddingservice");
+    client.Timeout = TimeSpan.FromMinutes(3);
 });
 
 var app = builder.Build();

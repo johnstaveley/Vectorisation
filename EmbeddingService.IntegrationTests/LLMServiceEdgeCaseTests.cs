@@ -1,9 +1,9 @@
-using EmbeddingService.Models;
+using AIService.Models;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
 
-namespace EmbeddingService.IntegrationTests;
+namespace AIService.IntegrationTests;
 
 [Collection("Integration Tests")]
 public class LLMServiceEdgeCaseTests

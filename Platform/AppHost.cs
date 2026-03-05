@@ -8,7 +8,7 @@ var ollama = builder.AddOllama("ollama")
 
 var elasticsearch = builder.AddElasticsearch("elasticsearch").WithDataVolume();
 
-var embeddingService = builder.AddProject("embeddingservice", "../EmbeddingService/EmbeddingService.csproj")
+var embeddingService = builder.AddProject("embeddingservice", "../EmbeddingService/AIService.csproj")
     .WithReference(ollama)
     .WithReference(elasticsearch)
     .WaitFor(ollama)

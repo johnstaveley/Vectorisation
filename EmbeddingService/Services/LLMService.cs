@@ -1,21 +1,24 @@
 using System.Text;
-using EmbeddingService.Models;
+using AIService.Models;
 using OllamaSharp;
 
-namespace EmbeddingService.Services;
+namespace AIService.Services;
 
 public class LLMService
 {
+    private readonly HttpClient _httpClient;
     private readonly OllamaApiClient _ollamaClient;
     private readonly ILogger<LLMService> _logger;
     private readonly string _modelName;
 
-    public LLMService(IConfiguration configuration, ILogger<LLMService> logger)
+    public LLMService(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<LLMService> logger)
     {
         var baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:50494";
         baseUrl = baseUrl.Replace("Endpoint=", "");
-
-        _ollamaClient = new OllamaApiClient(new Uri(baseUrl));
+        _httpClient = httpClientFactory.CreateClient();
+        _httpClient.BaseAddress = new Uri(baseUrl);
+        _httpClient.Timeout = TimeSpan.FromMinutes(5);
+        _ollamaClient = new OllamaApiClient(_httpClient);
         _logger = logger;
         _modelName = configuration["Ollama:ChatModel"] ?? "deepseek-r1:1.5b";
     }

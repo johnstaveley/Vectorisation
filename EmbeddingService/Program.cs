@@ -1,5 +1,5 @@
-using EmbeddingService.Models;
-using EmbeddingService.Services;
+using AIService.Models;
+using AIService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +10,7 @@ builder.Services.AddOpenApi();
 builder.AddElasticsearchClient("elasticsearch");
 
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<OllamaEmbeddingService>();
+builder.Services.AddSingleton<EmbeddingService>();
 builder.Services.AddSingleton<LLMService>();
 builder.Services.AddSingleton<ElasticsearchService>();
 
@@ -25,7 +25,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var ollamaService = app.Services.GetRequiredService<OllamaEmbeddingService>();
+var ollamaService = app.Services.GetRequiredService<EmbeddingService>();
 var llmService = app.Services.GetRequiredService<LLMService>();
 var elasticService = app.Services.GetRequiredService<ElasticsearchService>();
 
@@ -33,7 +33,7 @@ await ollamaService.EnsureModelPulledAsync();
 await llmService.EnsureModelPulledAsync();
 await elasticService.InitializeIndexAsync();
 
-app.MapPost("/embeddings", async (EmbeddingRequest request, OllamaEmbeddingService ollama, ElasticsearchService elastic, CancellationToken ct) =>
+app.MapPost("/embeddings", async (EmbeddingRequest request, EmbeddingService ollama, ElasticsearchService elastic, CancellationToken ct) =>
     {
         if (string.IsNullOrWhiteSpace(request.Text))
         {
@@ -60,7 +60,7 @@ app.MapPost("/embeddings", async (EmbeddingRequest request, OllamaEmbeddingServi
     })
     .WithName("CreateEmbedding");
 
-app.MapPost("/search", async (SearchRequest request, OllamaEmbeddingService ollama, ElasticsearchService elastic, CancellationToken ct) =>
+app.MapPost("/search", async (SearchRequest request, EmbeddingService ollama, ElasticsearchService elastic, CancellationToken ct) =>
     {
         if (string.IsNullOrWhiteSpace(request.Query))
         {

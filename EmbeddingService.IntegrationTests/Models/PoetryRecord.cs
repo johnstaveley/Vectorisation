@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace EmbeddingService.IntegrationTests.Models;
+namespace AIService.IntegrationTests.Models;
 
 public class PoetryRecord
 {

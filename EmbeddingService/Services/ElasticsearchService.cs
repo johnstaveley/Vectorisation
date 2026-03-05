@@ -1,8 +1,8 @@
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
-using EmbeddingService.Models;
+using AIService.Models;
 
-namespace EmbeddingService.Services;
+namespace AIService.Services;
 
 public class ElasticsearchService
 {

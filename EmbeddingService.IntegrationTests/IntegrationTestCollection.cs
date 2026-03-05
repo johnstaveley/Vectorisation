@@ -1,4 +1,4 @@
-namespace EmbeddingService.IntegrationTests;
+namespace AIService.IntegrationTests;
 
 [CollectionDefinition("Integration Tests")]
 public class IntegrationTestCollection

@@ -1,17 +1,16 @@
 using System.Text;
 using System.Text.Json;
-using EmbeddingService.Models;
+using AIService.Models;
 
-namespace EmbeddingService.Services;
+namespace AIService.Services;
 
-public class OllamaEmbeddingService
+public class EmbeddingService
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<OllamaEmbeddingService> _logger;
+    private readonly ILogger<EmbeddingService> _logger;
     private readonly string _modelName;
     private readonly string _baseUrl;
-    public OllamaEmbeddingService(IConfiguration configuration, ILogger<OllamaEmbeddingService> logger,
-        IHttpClientFactory httpClientFactory)
+    public EmbeddingService(IConfiguration configuration, ILogger<EmbeddingService> logger, IHttpClientFactory httpClientFactory)
     {
         _baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? "http://localhost:50494";
         //_baseUrl = configuration.GetConnectionString("ollama") ?? configuration["Ollama:Url"] ?? throw new Exception("Ollama not initialised");

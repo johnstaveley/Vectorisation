@@ -1,4 +1,4 @@
-﻿namespace EmbeddingService.IntegrationTests
+﻿namespace AIService.IntegrationTests
 {
     public sealed class DefaultHttpClientFactory : IHttpClientFactory, IDisposable
     {
