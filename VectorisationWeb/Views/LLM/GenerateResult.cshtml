@@ -1,0 +1,41 @@
+@model EmbeddingService.Models.LLMRequest
+@{
+    ViewData["Title"] = "Generation Result";
+}
+
+<h1>Generation Result</h1>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">LLM Services</a></li>
+        <li class="breadcrumb-item"><a asp-action="Generate">Generate</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Result</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <strong>Your Prompt</strong>
+            </div>
+            <div class="card-body">
+                <p class="mb-0" style="white-space: pre-wrap;">@ViewBag.Prompt</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <strong>LLM Response</strong>
+            </div>
+            <div class="card-body">
+                <div style="white-space: pre-wrap; font-family: inherit;">@ViewBag.Response</div>
+            </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <a asp-action="Generate" class="btn btn-primary">Generate Another</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to LLM Services</a>
+        </div>
+    </div>
+</div>

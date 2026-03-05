@@ -1,0 +1,41 @@
+@model EmbeddingService.Models.LLMRequest
+@{
+    ViewData["Title"] = "Chat Result";
+}
+
+<h1>Chat Result</h1>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">LLM Services</a></li>
+        <li class="breadcrumb-item"><a asp-action="Chat">Chat</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Result</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <strong>You</strong>
+            </div>
+            <div class="card-body">
+                <p class="mb-0" style="white-space: pre-wrap;">@ViewBag.Message</p>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <strong>AI Assistant</strong>
+            </div>
+            <div class="card-body">
+                <div style="white-space: pre-wrap; font-family: inherit;">@ViewBag.Response</div>
+            </div>
+        </div>
+        
+        <div class="d-flex gap-2">
+            <a asp-action="Chat" class="btn btn-success">Continue Chatting</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to LLM Services</a>
+        </div>
+    </div>
+</div>

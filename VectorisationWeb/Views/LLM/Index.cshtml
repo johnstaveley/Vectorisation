@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "LLM Services";
+}
+
+<div class="text-center">
+    <h1 class="display-4">LLM Services</h1>
+    <p class="lead">Interact with the Large Language Model powered by Ollama</p>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-chat-text"></i> Generate Text
+                </h5>
+                <p class="card-text">
+                    Generate text completions from a prompt. Useful for creative writing, 
+                    code generation, or answering questions.
+                </p>
+                <a asp-action="Generate" class="btn btn-primary">Generate Text</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-chat-dots"></i> Chat
+                </h5>
+                <p class="card-text">
+                    Have a conversation with the AI. Perfect for interactive queries
+                    and back-and-forth discussions.
+                </p>
+                <a asp-action="Chat" class="btn btn-success">Start Chat</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-cpu"></i> Available Models
+                </h5>
+                <p class="card-text">
+                    View all available LLM models installed on the Ollama server.
+                    See model details and specifications.
+                </p>
+                <a asp-action="Models" class="btn btn-info">View Models</a>
+            </div>
+        </div>
+    </div>
+</div>
