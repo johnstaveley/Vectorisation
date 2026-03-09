@@ -1,7 +1,7 @@
 using AIService.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VectorisationWeb.Controllers;
+namespace AIWeb.Controllers;
 
 public class EmbeddingsController : Controller
 {
@@ -10,7 +10,7 @@ public class EmbeddingsController : Controller
 
     public EmbeddingsController(IHttpClientFactory httpClientFactory, ILogger<EmbeddingsController> logger)
     {
-        _httpClient = httpClientFactory.CreateClient("embeddingservice");
+        _httpClient = httpClientFactory.CreateClient("aiservice");
         _logger = logger;
     }
 

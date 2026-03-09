@@ -5,9 +5,9 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddHttpClient("embeddingservice", client =>
+builder.Services.AddHttpClient("aiservice", client =>
 {
-    client.BaseAddress = new Uri("http://embeddingservice");
+    client.BaseAddress = new Uri("http://aiservice");
     client.Timeout = TimeSpan.FromMinutes(3);
 });
 

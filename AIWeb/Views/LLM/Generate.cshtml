@@ -1,15 +1,15 @@
-@model EmbeddingService.Models.LLMRequest
+@model AIService.Models.LLMRequest
 @{
-    ViewData["Title"] = "Chat with LLM";
+    ViewData["Title"] = "Generate Text";
 }
 
-<h1>Chat with LLM</h1>
-<p class="text-muted">Have a conversation with the AI assistant</p>
+<h1>Generate Text</h1>
+<p class="text-muted">Enter a prompt to generate text using the LLM</p>
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index">LLM Services</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Chat</li>
+        <li class="breadcrumb-item active" aria-current="page">Generate</li>
     </ol>
 </nav>
 
@@ -25,11 +25,11 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                <form asp-action="Chat" method="post">
+                <form asp-action="Generate" method="post">
                     <div class="mb-3">
-                        <label asp-for="Prompt" class="form-label">Your Message</label>
-                        <textarea asp-for="Prompt" class="form-control" rows="4" 
-                                  placeholder="Type your message here... e.g., 'What is the capital of France?'"></textarea>
+                        <label asp-for="Prompt" class="form-label">Prompt</label>
+                        <textarea asp-for="Prompt" class="form-control" rows="5" 
+                                  placeholder="Enter your prompt here... e.g., 'Write a short poem about programming'"></textarea>
                         <span asp-validation-for="Prompt" class="text-danger"></span>
                     </div>
                     
@@ -53,6 +53,9 @@
                                                 </label>
                                                 <input asp-for="Options.Temperature" type="number" 
                                                        class="form-control" step="0.1" min="0" max="2" value="0.7" />
+                                                <small class="form-text text-muted">
+                                                    Higher values make output more random
+                                                </small>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -63,6 +66,9 @@
                                                 </label>
                                                 <input asp-for="Options.TopP" type="number" 
                                                        class="form-control" step="0.05" min="0" max="1" value="0.9" />
+                                                <small class="form-text text-muted">
+                                                    Nucleus sampling threshold
+                                                </small>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -72,6 +78,9 @@
                                                 </label>
                                                 <input asp-for="Options.MaxTokens" type="number" 
                                                        class="form-control" min="1" max="4096" value="2000" />
+                                                <small class="form-text text-muted">
+                                                    Maximum response length
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
@@ -80,9 +89,9 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-primary">
                         <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                        Send Message
+                        Generate
                     </button>
                     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
                 </form>
@@ -93,12 +102,12 @@
     <div class="col-md-4">
         <div class="card bg-light">
             <div class="card-body">
-                <h6 class="card-title">Chat Tips</h6>
+                <h6 class="card-title">Tips</h6>
                 <ul class="small mb-0">
-                    <li>Ask clear, specific questions</li>
-                    <li>You can ask follow-up questions</li>
-                    <li>The AI can help with coding, writing, analysis, and more</li>
-                    <li>Be patient - complex queries take longer</li>
+                    <li>Be specific in your prompts for better results</li>
+                    <li>Lower temperature (0.1-0.3) for factual responses</li>
+                    <li>Higher temperature (0.7-1.0) for creative content</li>
+                    <li>Response time depends on prompt complexity</li>
                 </ul>
             </div>
         </div>

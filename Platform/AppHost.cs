@@ -8,14 +8,14 @@ var ollama = builder.AddOllama("ollama")
 
 var elasticsearch = builder.AddElasticsearch("elasticsearch").WithDataVolume();
 
-var embeddingService = builder.AddProject("embeddingservice", "../EmbeddingService/AIService.csproj")
+var aiService = builder.AddProject("aiservice", "../AIService/AIService.csproj")
     .WithReference(ollama)
     .WithReference(elasticsearch)
     .WaitFor(ollama)
     .WaitFor(elasticsearch);
 
-var web = builder.AddProject("webservice", "../VectorisationWeb/VectorisationWeb.csproj")
-    .WithReference(embeddingService)
-    .WaitFor(embeddingService);
+var web = builder.AddProject("webservice", "../AIWeb/AIWeb.csproj")
+    .WithReference(aiService)
+    .WaitFor(aiService);
 
 builder.Build().Run();

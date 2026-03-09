@@ -1,4 +1,4 @@
-namespace VectorisationWeb.Models
+namespace AIWeb.Models
 {
     public class ErrorViewModel
     {

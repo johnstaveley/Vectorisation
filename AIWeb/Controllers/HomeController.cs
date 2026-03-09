@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using VectorisationWeb.Models;
+using AIWeb.Models;
 
-namespace VectorisationWeb.Controllers;
+namespace AIWeb.Controllers;
 
 public class HomeController : Controller
 {

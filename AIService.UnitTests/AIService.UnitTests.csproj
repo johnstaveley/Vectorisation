@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EmbeddingService\AIService.csproj" />
-    <ProjectReference Include="..\EmbeddingService.Models\EmbeddingService.Models.csproj" />
+    <ProjectReference Include="..\AIService\AIService.csproj" />
+    <ProjectReference Include="..\AIService.Models\AIService.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

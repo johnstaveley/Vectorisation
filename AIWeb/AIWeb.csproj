@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EmbeddingService.Models\EmbeddingService.Models.csproj" />
+    <ProjectReference Include="..\AIService.Models\AIService.Models.csproj" />
     <ProjectReference Include="..\ServiceDefaults\Platform.ServiceDefaults.csproj" />
   </ItemGroup>
 

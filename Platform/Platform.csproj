@@ -14,6 +14,7 @@
     <PackageReference Include="CommunityToolkit.Aspire.Hosting.Ollama" Version="13.1.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EmbeddingService\AIService.csproj" />
+    <ProjectReference Include="..\AIService\AIService.csproj" />
+    <ProjectReference Include="..\AIWeb\AIWeb.csproj" />
   </ItemGroup>
 </Project>

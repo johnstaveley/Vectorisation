@@ -27,7 +27,7 @@
     <PackageReference Include="xunit.v3" Version="3.2.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EmbeddingService.Models\EmbeddingService.Models.csproj" />
+    <ProjectReference Include="..\AIService.Models\AIService.Models.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
